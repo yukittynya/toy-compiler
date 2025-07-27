@@ -1,0 +1,9 @@
+fn main() {
+    let x = 1;
+    let y = 2;
+    let str = "Hai";
+
+    print(1 + 2);
+    print("Hai nya");
+    print(str)
+}
