@@ -36,13 +36,10 @@ int main(int argc, char *argv[]) {
     fclose(fptr);
     buffer[len] = '\0';
 
-    Lexer* lexer = create_lexer(buffer);
+    Lexer lexer = createLexer(buffer);
 
-    printf("%s\n", lexer -> buffer);
-
-    free(lexer -> buffer);
-    free(lexer -> tokens);
     free(lexer);
+    lexer = NULL;
     
     return 0;
 }

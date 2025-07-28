@@ -4,107 +4,59 @@
 #include <stdlib.h>
 #include <string.h>
 
-void token_array_init(TokenArray *arr) {
-    arr -> tokens = (Token*) malloc(sizeof(Token) * 32);
-    arr -> count = 0;
-    arr -> capacity = 16;
-}
-
-void token_array_push(TokenArray* arr, Token token) {
-    if (arr -> count >= arr -> capacity) {
-        arr -> capacity *= 2;
-        arr -> tokens = realloc(arr -> tokens, sizeof(Token) * arr -> capacity);
-    }
-
-    arr -> tokens[arr -> count] = token;
-    arr -> count++;
-}
-
-void print_token_array(TokenArray* arr) {
-    for (int i = 0; i < arr -> count; i++) {
-        print_token(arr -> tokens[i]);
-    }
-}
-
-Token create_token(TokenType type, char *value, size_t line, size_t col) {
-    Token token;
-
-    token.type = type;
-    strcpy(token.value, value);
-    token.line = line;
-    token.col = col;
-
-    return token;
-}
-
-void print_token(Token token) {
-    const char* type = token_type_to_str(token.type); 
-
-    printf("Token [Type: %s, Value: %s, Line: %zu, Col: %zu]\n", type, token.value, token.line, token.col);
-}
-
-const char* token_type_to_str(TokenType type) {
+char* _typeToString(TokenType type) {
     switch (type) {
-        case TOK_FN:
-            return "TOK_FN";
-            break;
-
-        case TOK_LET: 
-            return "TOK_LET";
-            break;
-
-        case TOK_PRINT:
-            return "TOK_PRINT";
-            break;
-
-        case TOK_STRING:
-            return "TOK_STRING";
-            break;
-        case TOK_IDENTIFIER:
-            return "TOK_IDENTIFIER";
-            break;
-        case TOK_NUMBER:
-            return "TOK_NUMBER";
-            break;
-
-        case TOK_LEFT_PAREN:
-            return "TOK_LEFT_PAREN";
-            break;
-
-        case TOK_RIGHT_PAREN:
-            return "TOK_RIGHT_PAREN";
-            break;
-
-        case TOK_LEFT_BRACE:
-            return "TOK_LEFT_BRACE";
-            break;
-
-        case TOK_RIGHT_BRACE:
-            return "TOK_RIGHT_BRACE";
-            break;
-
-        case TOK_COMMA:
-            return "TOK_COMMA";
-            break;
-
-        case TOK_DOT:
-            return "TOK_DOT";
-            break;
-
-        case TOK_STAR:
-            return "TOK_STAR";
-            break;
-
-        case TOK_SLASH:
-            return "TOK_SLASH";
-            break;
-
-        case TOK_SEMICOLON:
-            return "TOK_SEMICOLON";
-            break;
-
-        default:
-            return NULL;
-            break;
+        case TokenTypeIllegal:     return "TokenTypeIllegal";
+        case TokenTypeFn:          return "TokenTypeFn";
+        case TokenTypeLet:         return "TokenTypeLet";
+        case TokenTypePrint:       return "TokenTypePrint";
+        case TokenTypeNull:        return "TokenTypeNull";
+        case TokenTypeString:      return "TokenTypeString";
+        case TokenTypeNumber:      return "TokenTypeNumber";
+        case TokenTypeIdentifier:  return "TokenTypeIdentifier";
+        case TokenTypeLeftParen:   return "TokenTypeLeftParen";
+        case TokenTypeRightParen:  return "TokenTypeRightParen";
+        case TokenTypeLeftBrace:   return "TokenTypeLeftBrace";
+        case TokenTypeRightBrace:  return "TokenTypeRightBrace";
+        case TokenTypeComma:       return "TokenTypeComma";
+        case TokenTypeDot:         return "TokenTypeDot";
+        case TokenTypeStar:        return "TokenTypeStar";
+        case TokenTypeSlash:       return "TokenTypeSlash";
+        case TokenTypeSemicolon:   return "TokenTypeSemicolon";
+        default:                   return "Unknown";
     }
+}
+
+void _printToken(Token tok) {
+    if (!tok) return;
+
+    printf("Token: [Type %s, Literal: %s]", _typeToString(tok -> type), tok -> literal);
+}
+
+Token createToken(TokenType type, char* literal) {
+    Token tok; 
+    size_t len = sizeof(*tok);
+
+    tok = malloc(len);
+    if (!tok) {
+        return NULL;
+    }
+
+    memset(tok, 0, len);
+
+    tok -> type = type;
+    tok -> literal = literal;
+
+    return tok;
+}
+
+void freeToken(Token* tok) {
+    if (!tok || !*tok) return;
+
+    if (*tok && (*tok) -> literal)  {
+        free((*tok) -> literal);
+    }
+
+    free(*tok);
+    *tok = NULL;
 }

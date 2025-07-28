@@ -1,51 +1,63 @@
 #include "lexer.h"
 
 #include <string.h>
+#include <stdio.h>
 
-int get_index(KeywordMap* map, char* key) {
-    for (int i = 0; i < map -> count; i++) {
-        if (strcmp(map -> keys[i], key) == 0) {
-            return i;
+// Private 
+
+void _lexerReadChar(Lexer lexer);
+void _lexerAdvance(Lexer lexer);
+void _lexerSkipWhitespace(Lexer lexer);
+
+void _lexerReadChar(Lexer lexer) {
+    if (!lexer) return;
+
+    if (lexer -> position >= lexer -> len) {
+        lexer -> character = '\0';
+    } else {
+        lexer -> character = lexer -> buffer[lexer -> position];
+    }
+}
+
+void _lexerAdvance(Lexer lexer) {
+    if (!lexer) return;
+
+    if (lexer -> position < lexer -> len) {
+        lexer -> position++;
+    }
+};
+
+void _lexerSkipWhitespace(Lexer lexer) {
+    if (!lexer) return;
+
+    while (lexer -> character == ' ' || lexer -> character == '\t' || lexer -> character == '\n') {
+        if (lexer -> position >= lexer -> len) {
+            return;
         }
-    }
 
-    return -1;
-}
-
-void insert(KeywordMap *map, char *key, TokenType value) {
-    int index = get_index(map, key);
-
-    if (index == -1) {
-        strcpy(map -> keys[map -> count], key);
-
-        map -> values[map -> count] = value;
-        map -> count++;
-    } else {
-        map -> values[index] = value;
+        _lexerAdvance(lexer);
+        _lexerReadChar(lexer);
     }
 }
 
-TokenType get(KeywordMap* map, char* key) {
-    int index = get_index(map, key);
+// Public
 
-    if (index == -1) {
-        return TOK_NULL;
-    } else {
-        return map -> values[index];
+Lexer createLexer(const char* buffer) {
+    Lexer lexer;
+    size_t len = sizeof(*lexer);
+
+    lexer = malloc(len);
+    if (!lexer) {
+        return NULL;
     }
-}
 
-Lexer* create_lexer(char* buffer) {
-    Lexer* lexer = (Lexer*) malloc(sizeof(Lexer));
+    memset(lexer, 0, len);
 
-    lexer -> buffer = (char*) malloc(strlen(buffer) + 1);
-    strcpy(lexer -> buffer, buffer);
-    
-    token_array_init(lexer -> tokens);
+    lexer -> buffer = buffer;
+    lexer -> len = strlen(buffer);
+    lexer -> position = 0;
 
-    insert(&lexer -> keyword_map, "fn", TOK_FN);
-    insert(&lexer -> keyword_map, "let", TOK_LET);
-    insert(&lexer -> keyword_map, "print", TOK_PRINT);
+    _lexerReadChar(lexer);
 
     return lexer;
 }
