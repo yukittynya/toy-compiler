@@ -1,5 +1,6 @@
 #include "lexer.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -40,18 +41,26 @@ void _lexerSkipWhitespace(Lexer* lexer) {
     }
 }
 
+
 // Public
 
-Lexer* createLexer(const char* buffer) {
-    Lexer* lexer;
-    size_t len = sizeof(*lexer);
+void printTest(Lexer* lexer) {
+    while (lexer -> position < lexer->len) {  
+        _lexerSkipWhitespace(lexer);
 
-    lexer = malloc(len);
+        printf("%c", lexer->character);
+
+        _lexerAdvance(lexer);
+        _lexerReadChar(lexer);  
+    }
+}
+
+Lexer* createLexer(const char* buffer) {
+    Lexer* lexer = calloc(1, sizeof(*lexer));
+
     if (!lexer) {
         return NULL;
     }
-
-    memset(lexer, 0, len);
 
     lexer -> buffer = buffer;
     lexer -> len = strlen(buffer);

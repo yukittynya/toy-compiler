@@ -13,6 +13,6 @@ typedef struct {
 } Lexer;
 
 Lexer* createLexer(const char* buffer);
-void printTest(Lexer lexer); 
+void printTest(Lexer* lexer); 
 
 #endif // !LEXER_H

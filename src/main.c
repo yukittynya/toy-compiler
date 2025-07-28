@@ -38,6 +38,8 @@ int main(int argc, char *argv[]) {
 
     Lexer* lexer = createLexer(buffer);
 
+    printTest(lexer);
+
     free(lexer);
     lexer = NULL;
     

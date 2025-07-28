@@ -34,15 +34,11 @@ void _printToken(Token* tok) {
 }
 
 Token* createToken(TokenType type, char* literal) {
-    Token* tok; 
-    size_t len = sizeof(*tok);
+    Token* tok = calloc(1, sizeof(*tok)); 
 
-    tok = malloc(len);
     if (!tok) {
         return NULL;
     }
-
-    memset(tok, 0, len);
 
     tok -> type = type;
     tok -> literal = literal;
