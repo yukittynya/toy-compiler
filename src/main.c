@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "lib/lexer/lexer.h"
+
 #define MAX_FILE_PATH 256
 
 void handle_input(char* file_path, int argc, char** argv) {
@@ -22,6 +24,25 @@ int main(int argc, char *argv[]) {
     char file_path[MAX_FILE_PATH];
     handle_input(file_path, argc, argv);
 
+    FILE* fptr = fopen(file_path, "r");
 
+    fseek(fptr, 0, SEEK_END);
+    int len = ftell(fptr);
+    fseek(fptr, 0, SEEK_SET);
+
+    char buffer[len + 1];
+
+    fread(buffer, 1, len, fptr);
+    fclose(fptr);
+    buffer[len] = '\0';
+
+    Lexer* lexer = create_lexer(buffer);
+
+    printf("%s\n", lexer -> buffer);
+
+    free(lexer -> buffer);
+    free(lexer -> tokens);
+    free(lexer);
+    
     return 0;
 }

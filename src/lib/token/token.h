@@ -7,6 +7,7 @@ typedef enum {
     TOK_FN,
     TOK_LET, 
     TOK_PRINT,
+    TOK_NULL,
 
     TOK_STRING,
     TOK_IDENTIFIER,

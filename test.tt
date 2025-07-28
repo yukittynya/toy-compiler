@@ -4,6 +4,6 @@ fn main() {
     let str = "Hai";
 
     print(1 + 2);
-    print("Hai nya");
+    print("Hai");
     print(str)
 }
