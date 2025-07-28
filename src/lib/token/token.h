@@ -24,12 +24,12 @@ typedef enum {
     TokenTypeSemicolon
 } TokenType;
 
-typedef struct _Token {
+typedef struct {
     TokenType type;
     char* literal;
-} *Token;
+} Token;
 
-Token createToken(TokenType type, char* literal);
-void freeToken(Token* tok);
+Token* createToken(TokenType type, char* literal);
+void freeToken(Token** tok);
 
 #endif // !TOKEN_H

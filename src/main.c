@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     fclose(fptr);
     buffer[len] = '\0';
 
-    Lexer lexer = createLexer(buffer);
+    Lexer* lexer = createLexer(buffer);
 
     free(lexer);
     lexer = NULL;

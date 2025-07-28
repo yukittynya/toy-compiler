@@ -5,11 +5,11 @@
 
 // Private 
 
-void _lexerReadChar(Lexer lexer);
-void _lexerAdvance(Lexer lexer);
-void _lexerSkipWhitespace(Lexer lexer);
+void _lexerReadChar(Lexer* lexer);
+void _lexerAdvance(Lexer* lexer);
+void _lexerSkipWhitespace(Lexer* lexer);
 
-void _lexerReadChar(Lexer lexer) {
+void _lexerReadChar(Lexer* lexer) {
     if (!lexer) return;
 
     if (lexer -> position >= lexer -> len) {
@@ -19,7 +19,7 @@ void _lexerReadChar(Lexer lexer) {
     }
 }
 
-void _lexerAdvance(Lexer lexer) {
+void _lexerAdvance(Lexer* lexer) {
     if (!lexer) return;
 
     if (lexer -> position < lexer -> len) {
@@ -27,7 +27,7 @@ void _lexerAdvance(Lexer lexer) {
     }
 };
 
-void _lexerSkipWhitespace(Lexer lexer) {
+void _lexerSkipWhitespace(Lexer* lexer) {
     if (!lexer) return;
 
     while (lexer -> character == ' ' || lexer -> character == '\t' || lexer -> character == '\n') {
@@ -42,8 +42,8 @@ void _lexerSkipWhitespace(Lexer lexer) {
 
 // Public
 
-Lexer createLexer(const char* buffer) {
-    Lexer lexer;
+Lexer* createLexer(const char* buffer) {
+    Lexer* lexer;
     size_t len = sizeof(*lexer);
 
     lexer = malloc(len);

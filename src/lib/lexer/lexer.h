@@ -5,14 +5,14 @@
 
 #include <stdlib.h>
 
-typedef struct _Lexer {
+typedef struct {
     const char* buffer;
     size_t len;
     size_t position;
     char character;
-} *Lexer;
+} Lexer;
 
-Lexer createLexer(const char* buffer);
+Lexer* createLexer(const char* buffer);
 void printTest(Lexer lexer); 
 
 #endif // !LEXER_H

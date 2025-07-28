@@ -27,14 +27,14 @@ char* _typeToString(TokenType type) {
     }
 }
 
-void _printToken(Token tok) {
+void _printToken(Token* tok) {
     if (!tok) return;
 
     printf("Token: [Type %s, Literal: %s]", _typeToString(tok -> type), tok -> literal);
 }
 
-Token createToken(TokenType type, char* literal) {
-    Token tok; 
+Token* createToken(TokenType type, char* literal) {
+    Token* tok; 
     size_t len = sizeof(*tok);
 
     tok = malloc(len);
@@ -50,7 +50,7 @@ Token createToken(TokenType type, char* literal) {
     return tok;
 }
 
-void freeToken(Token* tok) {
+void freeToken(Token** tok) {
     if (!tok || !*tok) return;
 
     if (*tok && (*tok) -> literal)  {
