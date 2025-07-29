@@ -1,14 +1,34 @@
 #include "lexer.h"
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
 // Private 
 
+typedef struct {
+    const char* key;
+    TokenType type;
+} _Keyword;
+
+_Keyword _keywordMap[] = {
+    "fn", TokenTypeFn,
+    "let", TokenTypeLet,
+    "print", TokenTypePrint,
+    "null", TokenTypeNull,
+};
+
+size_t _keywordCount = sizeof(_keywordMap) / sizeof(_Keyword);
+
 void _lexerReadChar(Lexer* lexer);
 void _lexerAdvance(Lexer* lexer);
 void _lexerSkipWhitespace(Lexer* lexer);
+void _lexerMapString(Lexer* lexer, char* string);
+void _lexerMapNumber(Lexer* lexer, char* string);
+
+bool _isAlpha(char c);
+bool _isNumber(char c);
 
 void _lexerReadChar(Lexer* lexer) {
     if (!lexer) return;
@@ -45,6 +65,57 @@ void _lexerSkipWhitespace(Lexer* lexer) {
     }
 }
 
+void _lexerMapString(Lexer* lexer, char* string) {
+    char* literal = malloc(strlen(string) + 1);
+    strcpy(literal, string);
+
+    for (int i = 0; i < _keywordCount; i++) {
+        if (strcmp(literal, _keywordMap[i].key) == 0) {
+            Token token = createToken(_keywordMap[i].type, literal, lexer -> line);
+            pushTokenArray(lexer -> tokens, token);
+            return;
+        }
+    }
+
+    Token* previous = previousToken(lexer -> tokens);
+
+    if (previous -> type == TokenTypeLet || previous -> type == TokenTypeFn) {
+        Token token = createToken(TokenTypeIdentifier, literal, lexer -> line);
+        pushTokenArray(lexer -> tokens, token);
+        return;
+    }
+
+    Token token = createToken(TokenTypeString, literal, lexer -> line);
+    pushTokenArray(lexer -> tokens, token);
+}
+
+void _lexerMapNumber(Lexer* lexer, char* string) {
+    char* literal = malloc(strlen(string) + 1);
+    strcpy(literal, string);
+
+    Token token = createToken(TokenTypeNumber, literal, lexer -> line);
+    pushTokenArray(lexer -> tokens, token);
+}
+
+bool _isAlpha(char c) {
+    if (c >= 65 && c <= 90) {
+        return true;
+    }
+
+    if (c >= 97 && c <= 122) {
+        return true;
+    }
+
+    return false;
+}
+
+bool _isNumber(char c) {
+    if (c >= 48 && c <= 57) {
+        return true;
+    }
+
+    return false;
+}
 
 // Public
 
@@ -101,12 +172,45 @@ void lexerParse(Lexer* lexer) {
                 pushTokenArray(lexer -> tokens, createToken(TokenTypeDoubleQuote, "\"", lexer -> line));
                 break;
 
+            case '=':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeEquals, "=", lexer -> line));
+                break;
+
             default:
                 break;
         }
 
-        _lexerAdvance(lexer);
-        _lexerReadChar(lexer);
+        if (_isAlpha(lexer -> character)) {
+            char string[1024];
+            int i = 0;
+
+            while (_isAlpha(lexer -> character)) {
+                string[i++] = lexer -> character;
+
+                _lexerAdvance(lexer);
+                _lexerReadChar(lexer);
+            }
+
+            string[i] = '\0';
+            _lexerMapString(lexer, string);
+        } else if (_isNumber(lexer -> character)) {
+            char string[1024];
+            int i = 0;
+
+            while (_isNumber(lexer -> character)) {
+                string[i++] = lexer -> character;
+
+                _lexerAdvance(lexer);
+                _lexerReadChar(lexer);
+            } 
+
+            string[i] = '\0';
+
+            _lexerMapNumber(lexer, string);
+        } else {
+            _lexerAdvance(lexer);
+            _lexerReadChar(lexer);
+        }
     }
 
     printTokenArray(lexer -> tokens);

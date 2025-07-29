@@ -28,6 +28,7 @@ char* _typeToString(TokenType type) {
         case TokenTypeSemicolon:    return "TokenTypeSemicolon";
         case TokenTypeSingleQuote:  return "TokenTypeSingleQuote";
         case TokenTypeDoubleQuote:  return "TokenTypeDoubleQuote";
+        case TokenTypeEquals:       return "TokenTypeEquals";
         default:                    return "Unknown";
     }
 }
@@ -66,6 +67,14 @@ void freeTokenArray(TokenArray** arr) {
 
     free(*arr);
     *arr = NULL;
+}
+
+Token* previousToken(TokenArray* arr) {
+    if (arr -> count <= 0) {
+        return NULL;
+    }
+
+    return &arr -> tokens[arr -> count - 1];
 }
 
 void pushTokenArray(TokenArray* arr, Token token) {

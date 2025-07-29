@@ -27,6 +27,7 @@ typedef enum {
     TokenTypeSemicolon,
     TokenTypeSingleQuote,
     TokenTypeDoubleQuote,
+    TokenTypeEquals,
 } TokenType;
 
 typedef struct {
@@ -46,6 +47,7 @@ Token createToken(TokenType type, char* literal, size_t line);
 TokenArray* createTokenArray();
 void freeTokenArray(TokenArray** arr);
 void pushTokenArray(TokenArray* arr, Token token); 
+Token* previousToken(TokenArray* arr);
 void printTokenArray(TokenArray* arr); 
 
 #endif // !TOKEN_H

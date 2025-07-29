@@ -1,9 +1,10 @@
 fn main() {
     let x = 1;
     let y = 2;
-    let str = "Hai";
+    let z = 12;
+    let hello = "Hai";
 
-    print(1 + 2);
+    print(1 + 2 + z);
     print("Hai");
-    print(str)
+    print(hello)
 }
