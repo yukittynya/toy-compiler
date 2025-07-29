@@ -2,6 +2,7 @@
 #define TOKEN_H
 
 typedef enum {
+    TokenTypeEof,
     TokenTypeIllegal,
 
     TokenTypeFn,

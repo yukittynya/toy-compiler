@@ -44,6 +44,44 @@ void _lexerSkipWhitespace(Lexer* lexer) {
 
 // Public
 
+void lexerParse(Lexer* lexer) {
+    while (lexer -> position < lexer -> len) {
+        _lexerSkipWhitespace(lexer);
+
+        switch (lexer -> character) {
+            case '(':
+                break;
+
+            case ')':
+                break;
+
+            case '{':
+                break;
+
+            case '}':
+                break;
+
+            case ',':
+                break;
+
+            case '.':
+                break;
+
+            case '*':
+                break;
+
+            case '/':
+                break;
+
+            case ';':
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
 void printTest(Lexer* lexer) {
     while (lexer -> position < lexer->len) {  
         _lexerSkipWhitespace(lexer);

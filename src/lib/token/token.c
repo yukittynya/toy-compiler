@@ -6,14 +6,17 @@
 
 char* _typeToString(TokenType type) {
     switch (type) {
+        case TokenTypeEof:     return "TokenTypeEof";
         case TokenTypeIllegal:     return "TokenTypeIllegal";
         case TokenTypeFn:          return "TokenTypeFn";
         case TokenTypeLet:         return "TokenTypeLet";
         case TokenTypePrint:       return "TokenTypePrint";
         case TokenTypeNull:        return "TokenTypeNull";
+
         case TokenTypeString:      return "TokenTypeString";
         case TokenTypeNumber:      return "TokenTypeNumber";
         case TokenTypeIdentifier:  return "TokenTypeIdentifier";
+
         case TokenTypeLeftParen:   return "TokenTypeLeftParen";
         case TokenTypeRightParen:  return "TokenTypeRightParen";
         case TokenTypeLeftBrace:   return "TokenTypeLeftBrace";
