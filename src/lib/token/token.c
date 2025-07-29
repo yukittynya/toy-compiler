@@ -26,6 +26,8 @@ char* _typeToString(TokenType type) {
         case TokenTypeStar:         return "TokenTypeStar";
         case TokenTypeSlash:        return "TokenTypeSlash";
         case TokenTypeSemicolon:    return "TokenTypeSemicolon";
+        case TokenTypeSingleQuote:  return "TokenTypeSingleQuote";
+        case TokenTypeDoubleQuote:  return "TokenTypeDoubleQuote";
         default:                    return "Unknown";
     }
 }
@@ -33,7 +35,7 @@ char* _typeToString(TokenType type) {
 void _printToken(Token* tok) {
     if (!tok) return;
 
-    printf("Token: [Type %s, Literal: %s]\n", _typeToString(tok -> type), tok -> literal);
+    printf("Token: [Type: %s, Literal: \"%s\", Line: %zu]\n", _typeToString(tok -> type), tok -> literal, tok -> line);
 }
 
 TokenArray* createTokenArray() {
@@ -96,11 +98,12 @@ void printTokenArray(TokenArray* arr) {
 }
 
 
-Token createToken(TokenType type, char* literal) {
+Token createToken(TokenType type, char* literal, size_t line) {
     Token tok;
 
     tok.type = type;
     tok.literal = literal;
+    tok.line = line;
 
     return tok;
 }

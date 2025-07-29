@@ -24,12 +24,15 @@ typedef enum {
     TokenTypeDot,
     TokenTypeStar,
     TokenTypeSlash,
-    TokenTypeSemicolon
+    TokenTypeSemicolon,
+    TokenTypeSingleQuote,
+    TokenTypeDoubleQuote,
 } TokenType;
 
 typedef struct {
     TokenType type;
     char* literal;
+    size_t line;
 } Token;
 
 typedef struct {
@@ -38,7 +41,7 @@ typedef struct {
     size_t capacity;
 } TokenArray;
 
-Token createToken(TokenType type, char* literal);
+Token createToken(TokenType type, char* literal, size_t line);
 
 TokenArray* createTokenArray();
 void freeTokenArray(TokenArray** arr);

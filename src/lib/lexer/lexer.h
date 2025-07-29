@@ -8,6 +8,7 @@
 typedef struct {
     const char* buffer;
     TokenArray* tokens;
+    size_t line;
     size_t len;
     size_t position;
     char character;

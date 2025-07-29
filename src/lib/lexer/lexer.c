@@ -18,6 +18,10 @@ void _lexerReadChar(Lexer* lexer) {
     } else {
         lexer -> character = lexer -> buffer[lexer -> position];
     }
+
+    if (lexer -> character == '\n') {
+        lexer -> line++;
+    }
 }
 
 void _lexerAdvance(Lexer* lexer) {
@@ -50,43 +54,51 @@ void lexerParse(Lexer* lexer) {
 
         switch (lexer -> character) {
             case '\0':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeEof, "EOF"));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeEof, "EOF", lexer -> line));
                 break;
 
             case '(':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftParen, "("));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftParen, "(", lexer -> line));
                 break;
 
             case ')':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightParen, ")"));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightParen, ")", lexer -> line));
                 break;
 
             case '{':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftBrace, "{"));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftBrace, "{", lexer -> line));
                 break;
 
             case '}':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightBrace, "}"));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightBrace, "}", lexer -> line));
                 break;
 
             case ',':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeComma, ","));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeComma, ",", lexer -> line));
                 break;
 
             case '.':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeDot, "."));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeDot, ".", lexer -> line));
                 break;
 
             case '*':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeStar, "*"));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeStar, "*", lexer -> line));
                 break;
 
             case '/':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeSlash, "/"));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeSlash, "/", lexer -> line));
                 break;
 
             case ';':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeSemicolon, ";"));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeSemicolon, ";", lexer -> line));
+                break;
+
+            case '\'':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeSingleQuote, "'", lexer -> line));
+                break;
+
+            case '"':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeDoubleQuote, "\"", lexer -> line));
                 break;
 
             default:
@@ -121,6 +133,7 @@ Lexer* createLexer(const char* buffer) {
     lexer -> buffer = buffer;
     lexer -> tokens = createTokenArray();
     lexer -> len = strlen(buffer);
+    lexer -> line = 1;
     lexer -> position = 0;
 
     _lexerReadChar(lexer);
