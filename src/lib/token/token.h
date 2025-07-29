@@ -11,6 +11,20 @@ typedef enum {
     TokenTypeLet,
     TokenTypePrint,
     TokenTypeNull,
+    TokenTypeIf,
+    TokenTypeElse,
+    TokenTypeWhile,
+    TokenTypeFor,
+
+    TokenTypeBang,
+    TokenTypeEquals,
+    TokenTypeGreater,
+    TokenTypeLess,
+
+    TokenTypeEqualsEquals,
+    TokenTypeBangEquals,
+    TokenTypeGreaterEquals,
+    TokenTypeLessEquals,
 
     TokenTypeString,
     TokenTypeNumber,
@@ -22,12 +36,13 @@ typedef enum {
     TokenTypeRightBrace,
     TokenTypeComma,
     TokenTypeDot,
+    TokenTypePlus,
+    TokenTypeMinus,
     TokenTypeStar,
     TokenTypeSlash,
     TokenTypeSemicolon,
     TokenTypeSingleQuote,
     TokenTypeDoubleQuote,
-    TokenTypeEquals,
 } TokenType;
 
 typedef struct {

@@ -6,30 +6,45 @@
 
 char* _typeToString(TokenType type) {
     switch (type) {
-        case TokenTypeEof:          return "TokenTypeEof";
-        case TokenTypeIllegal:      return "TokenTypeIllegal";
-        case TokenTypeFn:           return "TokenTypeFn";
-        case TokenTypeLet:          return "TokenTypeLet";
-        case TokenTypePrint:        return "TokenTypePrint";
-        case TokenTypeNull:         return "TokenTypeNull";
+        case TokenTypeEof:              return "TokenTypeEof";
+        case TokenTypeIllegal:          return "TokenTypeIllegal";
+        case TokenTypeFn:               return "TokenTypeFn";
+        case TokenTypeLet:              return "TokenTypeLet";
+        case TokenTypePrint:            return "TokenTypePrint";
+        case TokenTypeNull:             return "TokenTypeNull";
+        case TokenTypeIf:               return "TokenTypeIf";
+        case TokenTypeElse:             return "TokenTypeElse";
+        case TokenTypeWhile:            return "TokenTypeWhile";
+        case TokenTypeFor:              return "TokenTypeFor";
 
-        case TokenTypeString:       return "TokenTypeString";
-        case TokenTypeNumber:       return "TokenTypeNumber";
-        case TokenTypeIdentifier:   return "TokenTypeIdentifier";
+        case TokenTypeBang:             return "TokenTypeBang";       
+        case TokenTypeEquals:           return "TokenTypeEquals";
+        case TokenTypeGreater:          return "TokenTypeGreater";
+        case TokenTypeLess:             return "TokenTypeLess";
 
-        case TokenTypeLeftParen:    return "TokenTypeLeftParen";
-        case TokenTypeRightParen:   return "TokenTypeRightParen";
-        case TokenTypeLeftBrace:    return "TokenTypeLeftBrace";
-        case TokenTypeRightBrace:   return "TokenTypeRightBrace";
-        case TokenTypeComma:        return "TokenTypeComma";
-        case TokenTypeDot:          return "TokenTypeDot";
-        case TokenTypeStar:         return "TokenTypeStar";
-        case TokenTypeSlash:        return "TokenTypeSlash";
-        case TokenTypeSemicolon:    return "TokenTypeSemicolon";
-        case TokenTypeSingleQuote:  return "TokenTypeSingleQuote";
-        case TokenTypeDoubleQuote:  return "TokenTypeDoubleQuote";
-        case TokenTypeEquals:       return "TokenTypeEquals";
-        default:                    return "Unknown";
+        case TokenTypeBangEquals:       return "TokenTypeBangEquals";
+        case TokenTypeEqualsEquals:     return "TokenTypeEqualsEquals";
+        case TokenTypeGreaterEquals:    return "TokenTypeGreaterEquals";
+        case TokenTypeLessEquals:       return "TokenTypeLessEquals";
+
+        case TokenTypeString:           return "TokenTypeString";
+        case TokenTypeNumber:           return "TokenTypeNumber";
+        case TokenTypeIdentifier:       return "TokenTypeIdentifier";
+
+        case TokenTypeLeftParen:        return "TokenTypeLeftParen";
+        case TokenTypeRightParen:       return "TokenTypeRightParen";
+        case TokenTypeLeftBrace:        return "TokenTypeLeftBrace";
+        case TokenTypeRightBrace:       return "TokenTypeRightBrace";
+        case TokenTypeComma:            return "TokenTypeComma";
+        case TokenTypeDot:              return "TokenTypeDot";
+        case TokenTypePlus:             return "TokenTypePlus";
+        case TokenTypeMinus:            return "TokenTypeMinus";
+        case TokenTypeStar:             return "TokenTypeStar";
+        case TokenTypeSlash:            return "TokenTypeSlash";
+        case TokenTypeSemicolon:        return "TokenTypeSemicolon";
+        case TokenTypeSingleQuote:      return "TokenTypeSingleQuote";
+        case TokenTypeDoubleQuote:      return "TokenTypeDoubleQuote";
+        default:                        return "Unknown";
     }
 }
 

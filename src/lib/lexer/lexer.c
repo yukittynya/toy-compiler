@@ -17,6 +17,10 @@ _Keyword _keywordMap[] = {
     "let", TokenTypeLet,
     "print", TokenTypePrint,
     "null", TokenTypeNull,
+    "if", TokenTypeIf,
+    "else", TokenTypeElse,
+    "while", TokenTypeWhile,
+    "for", TokenTypeFor,
 };
 
 size_t _keywordCount = sizeof(_keywordMap) / sizeof(_Keyword);
@@ -150,6 +154,14 @@ void lexerParse(Lexer* lexer) {
 
             case '.':
                 pushTokenArray(lexer -> tokens, createToken(TokenTypeDot, ".", lexer -> line));
+                break;
+
+            case '+':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypePlus, "+", lexer -> line));
+                break;
+                
+            case '-':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeMinus, "-", lexer -> line));
                 break;
 
             case '*':
