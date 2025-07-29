@@ -1,6 +1,8 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
+#include <stdlib.h>
+
 typedef enum {
     TokenTypeEof,
     TokenTypeIllegal,
@@ -30,7 +32,17 @@ typedef struct {
     char* literal;
 } Token;
 
+typedef struct {
+    Token* tokens;
+    size_t count;
+    size_t capacity;
+} TokenArray;
+
 Token* createToken(TokenType type, char* literal);
 void freeToken(Token** tok);
+
+TokenArray* createTokenArray();
+void freeTokenArray(TokenArray** arr);
+void pushTokenArray(TokenArray* arr, Token* token); 
 
 #endif // !TOKEN_H

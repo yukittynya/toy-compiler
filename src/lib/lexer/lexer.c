@@ -49,6 +49,9 @@ void lexerParse(Lexer* lexer) {
         _lexerSkipWhitespace(lexer);
 
         switch (lexer -> character) {
+            case '\0':
+                break;
+
             case '(':
                 break;
 
@@ -101,6 +104,7 @@ Lexer* createLexer(const char* buffer) {
     }
 
     lexer -> buffer = buffer;
+    lexer -> tokens = createTokenArray();
     lexer -> len = strlen(buffer);
     lexer -> position = 0;
 
@@ -108,3 +112,14 @@ Lexer* createLexer(const char* buffer) {
 
     return lexer;
 }
+
+void freeLexer(Lexer** lexer) {
+    if (!lexer || !*lexer) return;
+
+    if (*lexer && (*lexer) -> tokens) {
+        freeTokenArray(&(*lexer) -> tokens);
+    }
+
+    free(*lexer);
+    *lexer = NULL;
+} 

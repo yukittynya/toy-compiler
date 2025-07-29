@@ -40,8 +40,7 @@ int main(int argc, char *argv[]) {
 
     printTest(lexer);
 
-    free(lexer);
-    lexer = NULL;
+    freeLexer(&lexer);
     
     return 0;
 }

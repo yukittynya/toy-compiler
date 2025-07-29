@@ -23,3 +23,6 @@ build/bin:
 .PHONY: clean
 clean:
 	rm -rvf build
+
+.PHONY: rebuild
+rebuild: clean build/bin/compiler
