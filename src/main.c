@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 
     Lexer* lexer = createLexer(buffer);
 
-    printTest(lexer);
+    lexerParse(lexer);
 
     freeLexer(&lexer);
     

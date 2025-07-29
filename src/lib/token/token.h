@@ -38,11 +38,11 @@ typedef struct {
     size_t capacity;
 } TokenArray;
 
-Token* createToken(TokenType type, char* literal);
-void freeToken(Token** tok);
+Token createToken(TokenType type, char* literal);
 
 TokenArray* createTokenArray();
 void freeTokenArray(TokenArray** arr);
-void pushTokenArray(TokenArray* arr, Token* token); 
+void pushTokenArray(TokenArray* arr, Token token); 
+void printTokenArray(TokenArray* arr); 
 
 #endif // !TOKEN_H

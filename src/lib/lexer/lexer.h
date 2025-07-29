@@ -15,9 +15,7 @@ typedef struct {
 
 Lexer* createLexer(const char* buffer);
 void freeLexer(Lexer** lexer);
-
 void lexerParse(Lexer* lexer);
-
 void printTest(Lexer* lexer); 
 
 #endif // !LEXER_H

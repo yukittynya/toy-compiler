@@ -50,39 +50,54 @@ void lexerParse(Lexer* lexer) {
 
         switch (lexer -> character) {
             case '\0':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeEof, "EOF"));
                 break;
 
             case '(':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftParen, "("));
                 break;
 
             case ')':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightParen, ")"));
                 break;
 
             case '{':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftBrace, "{"));
                 break;
 
             case '}':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightBrace, "}"));
                 break;
 
             case ',':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeComma, ","));
                 break;
 
             case '.':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeDot, "."));
                 break;
 
             case '*':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeStar, "*"));
                 break;
 
             case '/':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeSlash, "/"));
                 break;
 
             case ';':
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeSemicolon, ";"));
                 break;
 
             default:
                 break;
         }
+
+        _lexerAdvance(lexer);
+        _lexerReadChar(lexer);
     }
+
+    printTokenArray(lexer -> tokens);
 }
 
 void printTest(Lexer* lexer) {

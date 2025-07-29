@@ -33,7 +33,7 @@ char* _typeToString(TokenType type) {
 void _printToken(Token* tok) {
     if (!tok) return;
 
-    printf("Token: [Type %s, Literal: %s]", _typeToString(tok -> type), tok -> literal);
+    printf("Token: [Type %s, Literal: %s]\n", _typeToString(tok -> type), tok -> literal);
 }
 
 TokenArray* createTokenArray() {
@@ -59,10 +59,6 @@ void freeTokenArray(TokenArray** arr) {
     if (!arr || !arr) return;
 
     if (*arr && (*arr) -> tokens) {
-        for (int i = 0; i < (*arr) -> count; i++) {
-            Token* token = &((*arr) -> tokens[i]);
-            freeToken(&token);
-        }
         free((*arr) -> tokens);
     }   
 
@@ -70,44 +66,41 @@ void freeTokenArray(TokenArray** arr) {
     *arr = NULL;
 }
 
-void pushTokenArray(TokenArray* arr, Token* token) {
+void pushTokenArray(TokenArray* arr, Token token) {
     if (!arr) {
         return;
     }
 
     if (arr -> count >= arr -> capacity) {
         arr -> capacity *= 2;
-        arr -> tokens = realloc(arr -> tokens, sizeof(Token) * arr -> capacity);
+        Token* new_arr = realloc(arr -> tokens, sizeof(Token) * arr -> capacity);
         
-        if (!arr -> tokens) {
+        if (!new_arr) {
+            fprintf(stderr, "ERROR: Failed to realloc token array (capacity: %zu)\n", arr -> capacity);
             exit(1);
         }
+
+        arr -> tokens = new_arr;
     }
 
-    arr -> tokens[arr -> count] = *token;
+    arr -> tokens[arr -> count] = token;
     arr -> count++;
 }
 
-Token* createToken(TokenType type, char* literal) {
-    Token* tok = calloc(1, sizeof(*tok)); 
-
-    if (!tok) {
-        return NULL;
+void printTokenArray(TokenArray* arr) {
+    if (!arr) return;
+    
+    for (int i = 0; i < arr -> count; i++) {
+        _printToken(&arr -> tokens[i]);
     }
-
-    tok -> type = type;
-    tok -> literal = literal;
-
-    return tok;
 }
 
-void freeToken(Token** tok) {
-    if (!tok || !*tok) return;
 
-    if (*tok && (*tok) -> literal)  {
-        free((*tok) -> literal);
-    }
+Token createToken(TokenType type, char* literal) {
+    Token tok;
 
-    free(*tok);
-    *tok = NULL;
+    tok.type = type;
+    tok.literal = literal;
+
+    return tok;
 }
