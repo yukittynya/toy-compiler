@@ -305,7 +305,7 @@ Lexer* createLexer(const char* buffer) {
 void freeLexer(Lexer** lexer) {
     if (!lexer || !*lexer) return;
 
-    if (*lexer && (*lexer) -> tokens) {
+    if ((*lexer) -> tokens) {
         freeTokenArray(&(*lexer) -> tokens);
     }
 

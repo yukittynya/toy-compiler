@@ -81,9 +81,9 @@ TokenArray* createTokenArray() {
 }
 
 void freeTokenArray(TokenArray** arr) {
-    if (!arr || !arr) return;
+    if (!arr || !*arr) return;
 
-    if (*arr && (*arr) -> tokens) {
+    if ((*arr) -> tokens) {
         for (int i = 0; i < (*arr) -> count; i++) {
             if ((*arr) -> tokens[i].shouldFree) {
                 freeToken(&(*arr) -> tokens[i]);
