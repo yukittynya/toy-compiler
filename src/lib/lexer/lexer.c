@@ -10,9 +10,9 @@
 typedef struct {
     const char* key;
     TokenType type;
-} _Keyword;
+} _Map;
 
-_Keyword _keywordMap[] = {
+_Map _keywordMap[] = {
     "fn", TokenTypeFn,
     "let", TokenTypeLet,
     "print", TokenTypePrint,
@@ -23,13 +23,22 @@ _Keyword _keywordMap[] = {
     "for", TokenTypeFor,
 };
 
-size_t _keywordCount = sizeof(_keywordMap) / sizeof(_Keyword);
+_Map _compOperators[] = {
+    "==", TokenTypeEqualsEquals,
+    "!=", TokenTypeBangEquals,
+    "<=", TokenTypeLessEquals,
+    ">=", TokenTypeGreaterEquals,
+};
+
+size_t _keywordCount = sizeof(_keywordMap) / sizeof(_Map);
+size_t _compOpCount = sizeof(_compOperators) / sizeof(_Map);
 
 void _lexerReadChar(Lexer* lexer);
 void _lexerAdvance(Lexer* lexer);
 void _lexerSkipWhitespace(Lexer* lexer);
 void _lexerMapString(Lexer* lexer, char* string);
 void _lexerMapNumber(Lexer* lexer, char* string);
+void _lexerMapNext(Lexer* lexer, char character);
 
 bool _isAlpha(char c);
 bool _isNumber(char c);
@@ -99,6 +108,26 @@ void _lexerMapNumber(Lexer* lexer, char* string) {
 
     Token token = createToken(TokenTypeNumber, literal, lexer -> line);
     pushTokenArray(lexer -> tokens, token);
+}
+
+void _lexerMapNext(Lexer* lexer, char character) {
+    char nextChar = lexer -> buffer[lexer -> position + 1]; 
+    char* string = (char*) malloc(3);
+
+    string[0] = character;
+    string[1] = nextChar;
+    string[2] = '\0';
+
+    for (int i = 0; i < _compOpCount; i++) {
+        if (strcmp(_compOperators[i].key, string) == 0) {
+            Token token = createToken(_compOperators[i].type, string, lexer -> line);
+            pushTokenArray(lexer -> tokens, token);
+
+            _lexerAdvance(lexer);
+            _lexerReadChar(lexer);
+            return;
+        }
+    }
 }
 
 bool _isAlpha(char c) {
