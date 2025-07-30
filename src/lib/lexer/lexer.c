@@ -45,7 +45,7 @@ void _lexerAdvance(Lexer* lexer);
 void _lexerSkipWhitespace(Lexer* lexer);
 void _lexerMapString(Lexer* lexer, char* string);
 void _lexerMapNumber(Lexer* lexer, char* string);
-void _lexerMapNext(Lexer* lexer, char character);
+bool _lexerMapNext(Lexer* lexer, char character);
 
 bool _isAlpha(char c);
 bool _isNumber(char c);
@@ -97,9 +97,7 @@ void _lexerMapString(Lexer* lexer, char* string) {
         }
     }
 
-    Token* previous = previousToken(lexer -> tokens);
-
-    if (previous -> type == TokenTypeLet || previous -> type == TokenTypeFn) {
+    if (string[0] != '"') {
         Token token = createToken(TokenTypeIdentifier, literal, lexer -> line, true);
         pushTokenArray(lexer -> tokens, token);
         return;
@@ -117,7 +115,7 @@ void _lexerMapNumber(Lexer* lexer, char* string) {
     pushTokenArray(lexer -> tokens, token);
 }
 
-void _lexerMapNext(Lexer* lexer, char character) {
+bool _lexerMapNext(Lexer* lexer, char character) {
     char nextChar = lexer -> buffer[lexer -> position + 1]; 
     char* string = (char*) malloc(3);
 
@@ -132,9 +130,11 @@ void _lexerMapNext(Lexer* lexer, char character) {
 
             _lexerAdvance(lexer);
             _lexerReadChar(lexer);
-            return;
+            return true;
         }
     }
+
+    return false;
 }
 
 bool _isAlpha(char c) {
@@ -143,6 +143,10 @@ bool _isAlpha(char c) {
     }
 
     if (c >= 97 && c <= 122) {
+        return true;
+    }
+
+    if (c == '"') {
         return true;
     }
 
@@ -193,19 +197,43 @@ void lexerParse(Lexer* lexer) {
                 break;
 
             case '+':
+                if (_lexerMapNext(lexer, '+')) break; 
                 pushTokenArray(lexer -> tokens, createToken(TokenTypePlus, "+", lexer -> line, false));
                 break;
                 
             case '-':
+                if (_lexerMapNext(lexer, '-')) break; 
                 pushTokenArray(lexer -> tokens, createToken(TokenTypeMinus, "-", lexer -> line, false));
                 break;
 
             case '*':
+                if (_lexerMapNext(lexer, '*')) break; 
                 pushTokenArray(lexer -> tokens, createToken(TokenTypeStar, "*", lexer -> line, false));
                 break;
 
             case '/':
+                if (_lexerMapNext(lexer, '/')) break; 
                 pushTokenArray(lexer -> tokens, createToken(TokenTypeSlash, "/", lexer -> line, false));
+                break;
+
+            case '=':
+                if (_lexerMapNext(lexer, '=')) break; 
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeEquals, "=", lexer -> line, false));
+                break;
+
+            case '!':
+                if (_lexerMapNext(lexer, '!')) break; 
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeBang, "!", lexer -> line, false));
+                break;
+
+            case '<':
+                if (_lexerMapNext(lexer, '<')) break; 
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeLess, "<", lexer -> line, false));
+                break;
+
+            case '>':
+                if (_lexerMapNext(lexer, '>')) break; 
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeGreater, ">", lexer -> line, false));
                 break;
 
             case ';':
@@ -214,14 +242,6 @@ void lexerParse(Lexer* lexer) {
 
             case '\'':
                 pushTokenArray(lexer -> tokens, createToken(TokenTypeSingleQuote, "'", lexer -> line, false));
-                break;
-
-            case '"':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeDoubleQuote, "\"", lexer -> line, false));
-                break;
-
-            case '=':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeEquals, "=", lexer -> line, false));
                 break;
 
             default:
@@ -262,17 +282,6 @@ void lexerParse(Lexer* lexer) {
     }
 
     printTokenArray(lexer -> tokens);
-}
-
-void printTest(Lexer* lexer) {
-    while (lexer -> position < lexer->len) {  
-        _lexerSkipWhitespace(lexer);
-
-        printf("%c", lexer->character);
-
-        _lexerAdvance(lexer);
-        _lexerReadChar(lexer);  
-    }
 }
 
 Lexer* createLexer(const char* buffer) {

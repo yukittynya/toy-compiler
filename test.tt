@@ -4,11 +4,15 @@ fn main() {
     let z = 12;
     let hello = "Hai";
 
-    for (int i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
         print(i);
     }
 
     print(1 + 2 + z);
-    print("Hai");
-    print(hello)
+
+    if (1 > 3) {
+        print(hello);
+    } else {
+        print("hello");
+    }
 }
