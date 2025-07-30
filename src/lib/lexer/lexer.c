@@ -84,7 +84,7 @@ void _lexerMapString(Lexer* lexer, char* string) {
 
     for (int i = 0; i < _keywordCount; i++) {
         if (strcmp(literal, _keywordMap[i].key) == 0) {
-            Token token = createToken(_keywordMap[i].type, literal, lexer -> line);
+            Token token = createToken(_keywordMap[i].type, literal, lexer -> line, true);
             pushTokenArray(lexer -> tokens, token);
             return;
         }
@@ -93,12 +93,12 @@ void _lexerMapString(Lexer* lexer, char* string) {
     Token* previous = previousToken(lexer -> tokens);
 
     if (previous -> type == TokenTypeLet || previous -> type == TokenTypeFn) {
-        Token token = createToken(TokenTypeIdentifier, literal, lexer -> line);
+        Token token = createToken(TokenTypeIdentifier, literal, lexer -> line, true);
         pushTokenArray(lexer -> tokens, token);
         return;
     }
 
-    Token token = createToken(TokenTypeString, literal, lexer -> line);
+    Token token = createToken(TokenTypeString, literal, lexer -> line, true);
     pushTokenArray(lexer -> tokens, token);
 }
 
@@ -106,7 +106,7 @@ void _lexerMapNumber(Lexer* lexer, char* string) {
     char* literal = malloc(strlen(string) + 1);
     strcpy(literal, string);
 
-    Token token = createToken(TokenTypeNumber, literal, lexer -> line);
+    Token token = createToken(TokenTypeNumber, literal, lexer -> line, true);
     pushTokenArray(lexer -> tokens, token);
 }
 
@@ -120,7 +120,7 @@ void _lexerMapNext(Lexer* lexer, char character) {
 
     for (int i = 0; i < _compOpCount; i++) {
         if (strcmp(_compOperators[i].key, string) == 0) {
-            Token token = createToken(_compOperators[i].type, string, lexer -> line);
+            Token token = createToken(_compOperators[i].type, string, lexer -> line, true);
             pushTokenArray(lexer -> tokens, token);
 
             _lexerAdvance(lexer);
@@ -158,63 +158,63 @@ void lexerParse(Lexer* lexer) {
 
         switch (lexer -> character) {
             case '\0':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeEof, "EOF", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeEof, "EOF", lexer -> line, false));
                 break;
 
             case '(':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftParen, "(", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftParen, "(", lexer -> line, false));
                 break;
 
             case ')':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightParen, ")", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightParen, ")", lexer -> line, false));
                 break;
 
             case '{':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftBrace, "{", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeLeftBrace, "{", lexer -> line, false));
                 break;
 
             case '}':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightBrace, "}", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeRightBrace, "}", lexer -> line, false));
                 break;
 
             case ',':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeComma, ",", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeComma, ",", lexer -> line, false));
                 break;
 
             case '.':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeDot, ".", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeDot, ".", lexer -> line, false));
                 break;
 
             case '+':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypePlus, "+", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypePlus, "+", lexer -> line, false));
                 break;
                 
             case '-':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeMinus, "-", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeMinus, "-", lexer -> line, false));
                 break;
 
             case '*':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeStar, "*", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeStar, "*", lexer -> line, false));
                 break;
 
             case '/':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeSlash, "/", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeSlash, "/", lexer -> line, false));
                 break;
 
             case ';':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeSemicolon, ";", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeSemicolon, ";", lexer -> line, false));
                 break;
 
             case '\'':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeSingleQuote, "'", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeSingleQuote, "'", lexer -> line, false));
                 break;
 
             case '"':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeDoubleQuote, "\"", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeDoubleQuote, "\"", lexer -> line, false));
                 break;
 
             case '=':
-                pushTokenArray(lexer -> tokens, createToken(TokenTypeEquals, "=", lexer -> line));
+                pushTokenArray(lexer -> tokens, createToken(TokenTypeEquals, "=", lexer -> line, false));
                 break;
 
             default:

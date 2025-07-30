@@ -77,6 +77,12 @@ void freeTokenArray(TokenArray** arr) {
     if (!arr || !arr) return;
 
     if (*arr && (*arr) -> tokens) {
+        for (int i = 0; i < (*arr) -> count; i++) {
+            if ((*arr) -> tokens[i].shouldFree) {
+                freeToken(&(*arr) -> tokens[i]);
+            }
+         }
+
         free((*arr) -> tokens);
     }   
 
@@ -122,12 +128,21 @@ void printTokenArray(TokenArray* arr) {
 }
 
 
-Token createToken(TokenType type, char* literal, size_t line) {
+Token createToken(TokenType type, char* literal, size_t line, bool shouldFree) {
     Token tok;
 
     tok.type = type;
     tok.literal = literal;
     tok.line = line;
+    tok.shouldFree = shouldFree;
 
     return tok;
+}
+
+void freeToken(Token* token) {
+    if (!token -> shouldFree) {
+        return;
+    }
+
+    free(token -> literal);
 }

@@ -2,6 +2,7 @@
 #define TOKEN_H
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef enum {
     TokenTypeEof,
@@ -49,6 +50,7 @@ typedef struct {
     TokenType type;
     char* literal;
     size_t line;
+    bool shouldFree;
 } Token;
 
 typedef struct {
@@ -57,7 +59,8 @@ typedef struct {
     size_t capacity;
 } TokenArray;
 
-Token createToken(TokenType type, char* literal, size_t line);
+Token createToken(TokenType type, char* literal, size_t line, bool shouldFree);
+void freeToken(Token* token);
 
 TokenArray* createTokenArray();
 void freeTokenArray(TokenArray** arr);
