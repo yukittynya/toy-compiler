@@ -27,6 +27,13 @@ char* _typeToString(TokenType type) {
         case TokenTypeGreaterEquals:    return "TokenTypeGreaterEquals";
         case TokenTypeLessEquals:       return "TokenTypeLessEquals";
 
+        case TokenTypePlusPlus:         return "TokenTypePlusPlus";
+        case TokenTypeMinusMinus:       return "TokenTypeMinusMinus";
+        case TokenTypePlusEquals:       return "TokenTypePlusEquals";
+        case TokenTypeMinusEquals:      return "TokenTypeMinusEquals";
+        case TokenTypeStarEquals:       return "TokenTypeStarEquals";
+        case TokenTypeSlashEquals:      return "TokenTypeSlashEquals";
+
         case TokenTypeString:           return "TokenTypeString";
         case TokenTypeNumber:           return "TokenTypeNumber";
         case TokenTypeIdentifier:       return "TokenTypeIdentifier";
