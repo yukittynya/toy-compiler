@@ -9,6 +9,7 @@ char* _typeToString(TokenType type) {
         case TokenTypeEof:              return "TokenTypeEof";
         case TokenTypeIllegal:          return "TokenTypeIllegal";
         case TokenTypeFn:               return "TokenTypeFn";
+        case TokenTypeReturn:           return "TokenTypeReturn";
         case TokenTypeLet:              return "TokenTypeLet";
         case TokenTypePrint:            return "TokenTypePrint";
         case TokenTypeNull:             return "TokenTypeNull";

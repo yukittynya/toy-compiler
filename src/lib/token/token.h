@@ -9,6 +9,7 @@ typedef enum {
     TokenTypeIllegal,
 
     TokenTypeFn,
+    TokenTypeReturn,
     TokenTypeLet,
     TokenTypePrint,
     TokenTypeNull,

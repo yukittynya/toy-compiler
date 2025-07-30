@@ -14,6 +14,7 @@ typedef struct {
 
 _Map _keywordMap[] = {
     "fn", TokenTypeFn,
+    "return", TokenTypeReturn,
     "let", TokenTypeLet,
     "print", TokenTypePrint,
     "null", TokenTypeNull,

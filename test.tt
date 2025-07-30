@@ -1,3 +1,7 @@
+fn foo() {
+    print("bar");
+}
+
 fn main() {
     let x = 1;
     let y = 2;
@@ -15,4 +19,6 @@ fn main() {
     } else {
         print("hello");
     }
+
+    foo();
 }
