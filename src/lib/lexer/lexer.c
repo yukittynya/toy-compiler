@@ -23,15 +23,22 @@ _Map _keywordMap[] = {
     "for", TokenTypeFor,
 };
 
-_Map _compOperators[] = {
+_Map _operators[] = {
     "==", TokenTypeEqualsEquals,
     "!=", TokenTypeBangEquals,
     "<=", TokenTypeLessEquals,
     ">=", TokenTypeGreaterEquals,
+
+    "++", TokenTypePlusPlus,
+    "--", TokenTypeMinusMinus,
+    "+=", TokenTypePlusEquals,
+    "-=", TokenTypeMinusEquals,
+    "*=", TokenTypeStarEquals,
+    "/=", TokenTypeSlashEquals,
 };
 
 size_t _keywordCount = sizeof(_keywordMap) / sizeof(_Map);
-size_t _compOpCount = sizeof(_compOperators) / sizeof(_Map);
+size_t _operatorCount = sizeof(_operators) / sizeof(_Map);
 
 void _lexerReadChar(Lexer* lexer);
 void _lexerAdvance(Lexer* lexer);
@@ -118,9 +125,9 @@ void _lexerMapNext(Lexer* lexer, char character) {
     string[1] = nextChar;
     string[2] = '\0';
 
-    for (int i = 0; i < _compOpCount; i++) {
-        if (strcmp(_compOperators[i].key, string) == 0) {
-            Token token = createToken(_compOperators[i].type, string, lexer -> line, true);
+    for (int i = 0; i < _operatorCount; i++) {
+        if (strcmp(_operators[i].key, string) == 0) {
+            Token token = createToken(_operators[i].type, string, lexer -> line, true);
             pushTokenArray(lexer -> tokens, token);
 
             _lexerAdvance(lexer);

@@ -27,6 +27,13 @@ typedef enum {
     TokenTypeGreaterEquals,
     TokenTypeLessEquals,
 
+    TokenTypePlusPlus,
+    TokenTypeMinusMinus,
+    TokenTypePlusEquals,
+    TokenTypeMinusEquals,
+    TokenTypeStarEquals,
+    TokenTypeSlashEquals,
+
     TokenTypeString,
     TokenTypeNumber,
     TokenTypeIdentifier,
