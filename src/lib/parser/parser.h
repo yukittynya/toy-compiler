@@ -5,6 +5,7 @@
 
 typedef enum {
     // functions decl, call, print, let, binary ops, identifier, string literal, number literal
+    Okag
 } AstNodeType;
 
 typedef struct {

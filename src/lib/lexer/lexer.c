@@ -12,7 +12,7 @@ typedef struct {
     TokenType type;
 } _Map;
 
-_Map _keywordMap[] = {
+static const _Map _keywordMap[] = {
     "fn", TokenTypeFn,
     "return", TokenTypeReturn,
     "let", TokenTypeLet,
@@ -24,7 +24,7 @@ _Map _keywordMap[] = {
     "for", TokenTypeFor,
 };
 
-_Map _operators[] = {
+static const _Map _operators[] = {
     "==", TokenTypeEqualsEquals,
     "!=", TokenTypeBangEquals,
     "<=", TokenTypeLessEquals,
@@ -38,22 +38,10 @@ _Map _operators[] = {
     "/=", TokenTypeSlashEquals,
 };
 
-size_t _keywordCount = sizeof(_keywordMap) / sizeof(_Map);
-size_t _operatorCount = sizeof(_operators) / sizeof(_Map);
+static const size_t _keywordCount = sizeof(_keywordMap) / sizeof(_Map);
+static const size_t _operatorCount = sizeof(_operators) / sizeof(_Map);
 
-void _lexerReadChar(Lexer* lexer);
-void _lexerAdvance(Lexer* lexer);
-void _lexerSkipWhitespace(Lexer* lexer);
-void _lexerMapString(Lexer* lexer, char* string);
-void _lexerMapNumber(Lexer* lexer, char* string);
-bool _lexerMapNext(Lexer* lexer, char character);
-
-bool _isAlpha(char c);
-bool _isNumber(char c);
-
-void _lexerReadChar(Lexer* lexer) {
-    if (!lexer) return;
-
+static inline void _lexerReadChar(Lexer* lexer) {
     if (lexer -> position >= lexer -> len) {
         lexer -> character = '\0';
     } else {
@@ -65,17 +53,13 @@ void _lexerReadChar(Lexer* lexer) {
     }
 }
 
-void _lexerAdvance(Lexer* lexer) {
-    if (!lexer) return;
-
+static inline void _lexerAdvance(Lexer* lexer) {
     if (lexer -> position < lexer -> len) {
         lexer -> position++;
     }
 };
 
-void _lexerSkipWhitespace(Lexer* lexer) {
-    if (!lexer) return;
-
+static inline void _lexerSkipWhitespace(Lexer* lexer) {
     while (lexer -> character == ' ' || lexer -> character == '\t' || lexer -> character == '\n') {
         if (lexer -> position >= lexer -> len) {
             return;
@@ -86,7 +70,7 @@ void _lexerSkipWhitespace(Lexer* lexer) {
     }
 }
 
-void _lexerMapString(Lexer* lexer, char* string) {
+static void _lexerMapString(Lexer* lexer, char* string) {
     char* literal = malloc(strlen(string) + 1);
     strcpy(literal, string);
 
@@ -108,7 +92,7 @@ void _lexerMapString(Lexer* lexer, char* string) {
     pushTokenArray(lexer -> tokens, token);
 }
 
-void _lexerMapNumber(Lexer* lexer, char* string) {
+static void _lexerMapNumber(Lexer* lexer, char* string) {
     char* literal = malloc(strlen(string) + 1);
     strcpy(literal, string);
 
@@ -116,7 +100,7 @@ void _lexerMapNumber(Lexer* lexer, char* string) {
     pushTokenArray(lexer -> tokens, token);
 }
 
-bool _lexerMapNext(Lexer* lexer, char character) {
+static bool _lexerMapNext(Lexer* lexer, char character) {
     char nextChar = lexer -> buffer[lexer -> position + 1]; 
     char* string = (char*) malloc(3);
 
@@ -138,7 +122,7 @@ bool _lexerMapNext(Lexer* lexer, char character) {
     return false;
 }
 
-bool _isAlpha(char c) {
+static bool _isAlpha(char c) {
     if (c >= 65 && c <= 90) {
         return true;
     }
@@ -154,7 +138,7 @@ bool _isAlpha(char c) {
     return false;
 }
 
-bool _isNumber(char c) {
+static bool _isNumber(char c) {
     if (c >= 48 && c <= 57) {
         return true;
     }
