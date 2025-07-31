@@ -1,6 +1,7 @@
 #include "lexer.h"
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -41,32 +42,66 @@ static const _Map _operators[] = {
 static const size_t _keywordCount = sizeof(_keywordMap) / sizeof(_Map);
 static const size_t _operatorCount = sizeof(_operators) / sizeof(_Map);
 
-static inline void _lexerReadChar(Lexer* lexer) {
+static const uint8_t _charMap[256] = {
+    [0 ... 31] = 0,
+
+    [' '] = 1, ['\t'] = 1, ['\n'] = 1,
+
+    [33 ... 47] = 0,
+
+    ['0'] = 2, ['1'] = 2, ['2'] = 2, ['3'] = 2, ['4'] = 2,
+    ['5'] = 2, ['6'] = 2, ['7'] = 2, ['8'] = 2, ['9'] = 2,
+
+    [58 ... 64] = 0,
+
+    ['A'] = 4, ['B'] = 4, ['C'] = 4, ['D'] = 4, ['E'] = 4, ['F'] = 4,
+    ['G'] = 4, ['H'] = 4, ['I'] = 4, ['J'] = 4, ['K'] = 4, ['L'] = 4,
+    ['M'] = 4, ['N'] = 4, ['O'] = 4, ['P'] = 4, ['Q'] = 4, ['R'] = 4,
+    ['S'] = 4, ['T'] = 4, ['U'] = 4, ['V'] = 4, ['W'] = 4, ['X'] = 4,
+    ['Y'] = 4, ['Z'] = 4,
+
+    [91 ... 96] = 0,
+
+    ['a'] = 4, ['b'] = 4, ['c'] = 4, ['d'] = 4, ['e'] = 4, ['f'] = 4,
+    ['g'] = 4, ['h'] = 4, ['i'] = 4, ['j'] = 4, ['k'] = 4, ['l'] = 4,
+    ['m'] = 4, ['n'] = 4, ['o'] = 4, ['p'] = 4, ['q'] = 4, ['r'] = 4,
+    ['s'] = 4, ['t'] = 4, ['u'] = 4, ['v'] = 4, ['w'] = 4, ['x'] = 4,
+    ['y'] = 4, ['z'] = 4,
+    
+    ['"'] = 8, 
+    ['_'] = 4,  
+   
+
+};
+
+#define IS_WHITESPACE(c) (_charMap[(char)(c)] & 1)
+#define IS_DIGIT(c) (_charMap[(char)(c)] & 2)
+#define IS_ALPHA(c) (_charMap[(char)(c)] & 4)
+#define IS_STR_DELIM(c) (_charMap[(char)(c)] & 8)
+
+static inline void _lexerAdvanceAndRead(Lexer* lexer) {
+    if (lexer -> position >= lexer -> len) {
+        lexer -> character = '\0';
+        return;
+    }
+
+    lexer -> position++;
     if (lexer -> position >= lexer -> len) {
         lexer -> character = '\0';
     } else {
         lexer -> character = lexer -> buffer[lexer -> position];
-    }
 
-    if (lexer -> character == '\n') {
-        lexer -> line++;
+        if (lexer -> character == '\n') lexer -> line++;
     }
 }
 
-static inline void _lexerAdvance(Lexer* lexer) {
-    if (lexer -> position < lexer -> len) {
-        lexer -> position++;
-    }
-};
-
 static inline void _lexerSkipWhitespace(Lexer* lexer) {
-    while (lexer -> character == ' ' || lexer -> character == '\t' || lexer -> character == '\n') {
+    while (IS_WHITESPACE(lexer -> character)) {
         if (lexer -> position >= lexer -> len) {
             return;
         }
 
-        _lexerAdvance(lexer);
-        _lexerReadChar(lexer);
+        _lexerAdvanceAndRead(lexer);
     }
 }
 
@@ -113,34 +148,9 @@ static bool _lexerMapNext(Lexer* lexer, char character) {
             Token token = createToken(_operators[i].type, string, lexer -> line, true);
             pushTokenArray(lexer -> tokens, token);
 
-            _lexerAdvance(lexer);
-            _lexerReadChar(lexer);
+            _lexerAdvanceAndRead(lexer);
             return true;
         }
-    }
-
-    return false;
-}
-
-static bool _isAlpha(char c) {
-    if (c >= 65 && c <= 90) {
-        return true;
-    }
-
-    if (c >= 97 && c <= 122) {
-        return true;
-    }
-
-    if (c == '"') {
-        return true;
-    }
-
-    return false;
-}
-
-static bool _isNumber(char c) {
-    if (c >= 48 && c <= 57) {
-        return true;
     }
 
     return false;
@@ -233,36 +243,33 @@ void lexerParse(Lexer* lexer) {
                 break;
         }
 
-        if (_isAlpha(lexer -> character)) {
+        if (IS_ALPHA(lexer -> character)) {
             char string[1024];
             int i = 0;
 
-            while (_isAlpha(lexer -> character)) {
+            while (IS_ALPHA(lexer -> character)) {
                 string[i++] = lexer -> character;
 
-                _lexerAdvance(lexer);
-                _lexerReadChar(lexer);
+                _lexerAdvanceAndRead(lexer);
             }
 
             string[i] = '\0';
             _lexerMapString(lexer, string);
-        } else if (_isNumber(lexer -> character)) {
+        } else if (IS_DIGIT(lexer -> character)) {
             char string[1024];
             int i = 0;
 
-            while (_isNumber(lexer -> character)) {
+            while (IS_DIGIT(lexer -> character)) {
                 string[i++] = lexer -> character;
 
-                _lexerAdvance(lexer);
-                _lexerReadChar(lexer);
+                _lexerAdvanceAndRead(lexer);
             } 
 
             string[i] = '\0';
 
             _lexerMapNumber(lexer, string);
         } else {
-            _lexerAdvance(lexer);
-            _lexerReadChar(lexer);
+            _lexerAdvanceAndRead(lexer);
         }
     }
 
@@ -281,8 +288,7 @@ Lexer* createLexer(const char* buffer) {
     lexer -> len = strlen(buffer);
     lexer -> line = 1;
     lexer -> position = 0;
-
-    _lexerReadChar(lexer);
+    lexer -> character = lexer -> buffer[0];
 
     return lexer;
 }
