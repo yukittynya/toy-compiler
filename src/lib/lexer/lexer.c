@@ -61,8 +61,6 @@ static const uint8_t _charMap[256] = {
     
     ['"'] = 8, 
     ['_'] = 4,  
-   
-
 };
 
 #define IS_WHITESPACE(c) (_charMap[(char)(c)] & 1)
