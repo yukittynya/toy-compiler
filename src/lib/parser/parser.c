@@ -42,8 +42,19 @@ void _pushDeclaration(AstNode* root, AstNode* node) {
     root -> data.program.count++;
 }
 
-void parseTokens(Parser* parser) {
-     
+AstNode* parseTokens(Parser* parser) {
+    AstNode* program = (AstNode*) malloc(sizeof(AstNode));
+    program -> type = AstProgram;
+
+    while (_parserPeek(parser).type != TokenTypeEof) {
+        _parserAdvance(parser);
+    }
+
+    return program;
+}
+
+void parse(Parser* parser) {
+    parser -> root = parseTokens(parser);
 }
 
 Parser* createParser(TokenArray *arr, size_t len) {

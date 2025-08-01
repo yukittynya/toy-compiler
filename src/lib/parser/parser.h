@@ -76,6 +76,7 @@ typedef struct {
 
 Parser* createParser(TokenArray* arr, size_t len);
 void freeParser(Parser** parser);
-void parseTokens(Parser* parser);
+AstNode* parseTokens(Parser* parser);
+void parse(Parser* parser);
 
 #endif // !define PARSER_H

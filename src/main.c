@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     lexerParse(lexer);
 
     Parser* parser = createParser(lexer -> tokens, lexer -> tokens -> count);
-    parseTokens(parser);
+    parse(parser);
 
     freeParser(&parser);
     freeLexer(&lexer);
