@@ -14,51 +14,44 @@ typedef struct {
 } _Map;
 
 static const _Map _keywordMap[] = {
-    "fn", TokenTypeFn,
-    "return", TokenTypeReturn,
-    "let", TokenTypeLet,
-    "print", TokenTypePrint,
-    "null", TokenTypeNull,
-    "if", TokenTypeIf,
-    "else", TokenTypeElse,
-    "while", TokenTypeWhile,
-    "for", TokenTypeFor,
+    {"fn", TokenTypeFn},
+    {"return", TokenTypeReturn},
+    {"let", TokenTypeLet},
+    {"print", TokenTypePrint},
+    {"null", TokenTypeNull},
+    {"if", TokenTypeIf},
+    {"else", TokenTypeElse},
+    {"while", TokenTypeWhile},
+    {"for", TokenTypeFor},
 };
 
 static const _Map _operators[] = {
-    "==", TokenTypeEqualsEquals,
-    "!=", TokenTypeBangEquals,
-    "<=", TokenTypeLessEquals,
-    ">=", TokenTypeGreaterEquals,
+    {"==", TokenTypeEqualsEquals},
+    {"!=", TokenTypeBangEquals},
+    {"<=", TokenTypeLessEquals},
+    {">=", TokenTypeGreaterEquals},
 
-    "++", TokenTypePlusPlus,
-    "--", TokenTypeMinusMinus,
-    "+=", TokenTypePlusEquals,
-    "-=", TokenTypeMinusEquals,
-    "*=", TokenTypeStarEquals,
-    "/=", TokenTypeSlashEquals,
+    {"++", TokenTypePlusPlus},
+    {"--", TokenTypeMinusMinus},
+    {"+=", TokenTypePlusEquals},
+    {"-=", TokenTypeMinusEquals},
+    {"*=", TokenTypeStarEquals},
+    {"/=", TokenTypeSlashEquals},
 };
 
 static const size_t _keywordCount = sizeof(_keywordMap) / sizeof(_Map);
 static const size_t _operatorCount = sizeof(_operators) / sizeof(_Map);
 
 static const uint8_t _charMap[256] = {
-    [0 ... 31] = 0,
-
-    [' '] = 1, ['\t'] = 1, ['\n'] = 1,
-
-    [33 ... 47] = 0,
+    [' '] = 1, 
+    ['\t'] = 1, 
+    ['\n'] = 1,
 
     ['0' ... '9'] = 2,
 
-    [58 ... 64] = 0,
-
     ['A' ... 'Z'] = 4,
-
-    [91 ... 96] = 0,
-
     ['a' ... 'z'] = 4,
-    
+
     ['"'] = 8, 
     ['_'] = 4,  
 };
