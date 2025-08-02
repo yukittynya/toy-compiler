@@ -1,9 +1,24 @@
+fn foo() {
+    print("bar");
+}
+
 fn main() {
     let x = 1;
     let y = 2;
-    let str = "Hai";
+    let z = 12;
+    let hello = "Hai";
 
-    print(1 + 2);
-    print("Hai");
-    print(str)
+    for (let i = 0; i < 10; i++) {
+        print(i);
+    }
+
+    print(1 + 2 + z);
+
+    if (1 > 3) {
+        print(hello);
+    } else {
+        print("hello");
+    }
+
+    foo();
 }

@@ -3,24 +3,19 @@
 
 #include "../token/token.h"
 
-#define MAP_MAX 100
+#include <stdlib.h>
 
 typedef struct {
-    char keys[MAP_MAX][MAP_MAX];
-    TokenType values[MAP_MAX];
-    size_t count;
-} KeywordMap;
-
-int get_index(KeywordMap* map, char* key);
-void insert(KeywordMap* map, char* key, TokenType value);
-TokenType get(KeywordMap* map, char key[]);
-
-typedef struct {
-    char* buffer;
+    const char* buffer;
     TokenArray* tokens;
-    KeywordMap keyword_map;
+    size_t line;
+    size_t len;
+    size_t position;
+    char character;
 } Lexer;
 
-Lexer* create_lexer(char* buffer);
+Lexer* createLexer(const char* buffer);
+void freeLexer(Lexer** lexer);
+void lexerParse(Lexer* lexer);
 
 #endif // !LEXER_H

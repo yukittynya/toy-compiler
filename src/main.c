@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "lib/lexer/lexer.h"
+#include "lib/parser/parser.h"
 
 #define MAX_FILE_PATH 256
 
@@ -36,13 +37,15 @@ int main(int argc, char *argv[]) {
     fclose(fptr);
     buffer[len] = '\0';
 
-    Lexer* lexer = create_lexer(buffer);
+    Lexer* lexer = createLexer(buffer);
 
-    printf("%s\n", lexer -> buffer);
+    lexerParse(lexer);
 
-    free(lexer -> buffer);
-    free(lexer -> tokens);
-    free(lexer);
+    Parser* parser = createParser(lexer -> tokens, lexer -> tokens -> count);
+    parse(parser);
+
+    freeParser(&parser);
+    freeLexer(&lexer);
     
     return 0;
 }

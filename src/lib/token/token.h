@@ -2,33 +2,63 @@
 #define TOKEN_H
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef enum {
-    TOK_FN,
-    TOK_LET, 
-    TOK_PRINT,
-    TOK_NULL,
+    TokenTypeEof,
+    TokenTypeIllegal,
 
-    TOK_STRING,
-    TOK_IDENTIFIER,
-    TOK_NUMBER,
-    
-    TOK_LEFT_PAREN,
-    TOK_RIGHT_PAREN,
-    TOK_LEFT_BRACE,
-    TOK_RIGHT_BRACE,
-    TOK_COMMA,
-    TOK_DOT,
-    TOK_STAR,
-    TOK_SLASH,
-    TOK_SEMICOLON,
+    TokenTypeFn,
+    TokenTypeReturn,
+    TokenTypeLet,
+    TokenTypePrint,
+    TokenTypeNull,
+    TokenTypeIf,
+    TokenTypeElse,
+    TokenTypeWhile,
+    TokenTypeFor,
+
+    TokenTypeBang,
+    TokenTypeEquals,
+    TokenTypeGreater,
+    TokenTypeLess,
+
+    TokenTypeEqualsEquals,
+    TokenTypeBangEquals,
+    TokenTypeGreaterEquals,
+    TokenTypeLessEquals,
+
+    TokenTypePlusPlus,
+    TokenTypeMinusMinus,
+    TokenTypePlusEquals,
+    TokenTypeMinusEquals,
+    TokenTypeStarEquals,
+    TokenTypeSlashEquals,
+
+    TokenTypeString,
+    TokenTypeNumber,
+    TokenTypeIdentifier,
+
+    TokenTypeLeftParen,
+    TokenTypeRightParen,
+    TokenTypeLeftBrace,
+    TokenTypeRightBrace,
+    TokenTypeComma,
+    TokenTypeDot,
+    TokenTypePlus,
+    TokenTypeMinus,
+    TokenTypeStar,
+    TokenTypeSlash,
+    TokenTypeSemicolon,
+    TokenTypeSingleQuote,
+    TokenTypeDoubleQuote,
 } TokenType;
 
 typedef struct {
     TokenType type;
-    char* value;
+    char* literal;
     size_t line;
-    size_t col;
+    bool shouldFree;
 } Token;
 
 typedef struct {
@@ -37,17 +67,13 @@ typedef struct {
     size_t capacity;
 } TokenArray;
 
-const char* token_type_to_str(TokenType type);
+Token createToken(TokenType type, char* literal, size_t line, bool shouldFree);
+void freeToken(Token* token);
 
-// TokenArray
-
-void token_array_init(TokenArray* arr); 
-void token_array_push(TokenArray* arr, Token token);
-void print_token_array(TokenArray* arr); 
-
-// Token
-
-Token create_token(TokenType type, char* value, size_t line, size_t col);
-void print_token(Token token);
+TokenArray* createTokenArray();
+void freeTokenArray(TokenArray** arr);
+void pushTokenArray(TokenArray* arr, Token token); 
+Token* previousToken(TokenArray* arr);
+void printTokenArray(TokenArray* arr); 
 
 #endif // !TOKEN_H

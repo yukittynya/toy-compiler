@@ -4,107 +4,153 @@
 #include <stdlib.h>
 #include <string.h>
 
-void token_array_init(TokenArray *arr) {
-    arr -> tokens = (Token*) malloc(sizeof(Token) * 32);
-    arr -> count = 0;
-    arr -> capacity = 16;
+char* _typeToString(TokenType type) {
+    switch (type) {
+        case TokenTypeEof:              return "TokenTypeEof";
+        case TokenTypeIllegal:          return "TokenTypeIllegal";
+        case TokenTypeFn:               return "TokenTypeFn";
+        case TokenTypeReturn:           return "TokenTypeReturn";
+        case TokenTypeLet:              return "TokenTypeLet";
+        case TokenTypePrint:            return "TokenTypePrint";
+        case TokenTypeNull:             return "TokenTypeNull";
+        case TokenTypeIf:               return "TokenTypeIf";
+        case TokenTypeElse:             return "TokenTypeElse";
+        case TokenTypeWhile:            return "TokenTypeWhile";
+        case TokenTypeFor:              return "TokenTypeFor";
+
+        case TokenTypeBang:             return "TokenTypeBang";       
+        case TokenTypeEquals:           return "TokenTypeEquals";
+        case TokenTypeGreater:          return "TokenTypeGreater";
+        case TokenTypeLess:             return "TokenTypeLess";
+
+        case TokenTypeBangEquals:       return "TokenTypeBangEquals";
+        case TokenTypeEqualsEquals:     return "TokenTypeEqualsEquals";
+        case TokenTypeGreaterEquals:    return "TokenTypeGreaterEquals";
+        case TokenTypeLessEquals:       return "TokenTypeLessEquals";
+
+        case TokenTypePlusPlus:         return "TokenTypePlusPlus";
+        case TokenTypeMinusMinus:       return "TokenTypeMinusMinus";
+        case TokenTypePlusEquals:       return "TokenTypePlusEquals";
+        case TokenTypeMinusEquals:      return "TokenTypeMinusEquals";
+        case TokenTypeStarEquals:       return "TokenTypeStarEquals";
+        case TokenTypeSlashEquals:      return "TokenTypeSlashEquals";
+
+        case TokenTypeString:           return "TokenTypeString";
+        case TokenTypeNumber:           return "TokenTypeNumber";
+        case TokenTypeIdentifier:       return "TokenTypeIdentifier";
+
+        case TokenTypeLeftParen:        return "TokenTypeLeftParen";
+        case TokenTypeRightParen:       return "TokenTypeRightParen";
+        case TokenTypeLeftBrace:        return "TokenTypeLeftBrace";
+        case TokenTypeRightBrace:       return "TokenTypeRightBrace";
+        case TokenTypeComma:            return "TokenTypeComma";
+        case TokenTypeDot:              return "TokenTypeDot";
+        case TokenTypePlus:             return "TokenTypePlus";
+        case TokenTypeMinus:            return "TokenTypeMinus";
+        case TokenTypeStar:             return "TokenTypeStar";
+        case TokenTypeSlash:            return "TokenTypeSlash";
+        case TokenTypeSemicolon:        return "TokenTypeSemicolon";
+        case TokenTypeSingleQuote:      return "TokenTypeSingleQuote";
+        case TokenTypeDoubleQuote:      return "TokenTypeDoubleQuote";
+        default:                        return "Unknown";
+    }
 }
 
-void token_array_push(TokenArray* arr, Token token) {
+void _printToken(Token* tok) {
+    if (!tok) return;
+
+    printf("Token: [Type: %s, Literal: \"%s\", Line: %zu]\n", _typeToString(tok -> type), tok -> literal, tok -> line);
+}
+
+TokenArray* createTokenArray() {
+    TokenArray* arr = calloc(1, sizeof(TokenArray));
+
+    if (!arr) {
+        return NULL;
+    }
+
+    arr -> count = 0;
+    arr -> capacity = 32;
+    arr -> tokens = calloc(arr -> capacity, sizeof(Token));
+
+    if (!arr -> tokens) {
+        free(arr);
+        return NULL;
+    }
+
+    return arr;
+}
+
+void freeTokenArray(TokenArray** arr) {
+    if (!arr || !*arr) return;
+
+    if ((*arr) -> tokens) {
+        for (int i = 0; i < (*arr) -> count; i++) {
+            if ((*arr) -> tokens[i].shouldFree) {
+                freeToken(&(*arr) -> tokens[i]);
+            }
+         }
+
+        free((*arr) -> tokens);
+    }   
+
+    free(*arr);
+    *arr = NULL;
+}
+
+Token* previousToken(TokenArray* arr) {
+    if (arr -> count <= 0) {
+        return NULL;
+    }
+
+    return &arr -> tokens[arr -> count - 1];
+}
+
+void pushTokenArray(TokenArray* arr, Token token) {
+    if (!arr) {
+        return;
+    }
+
     if (arr -> count >= arr -> capacity) {
         arr -> capacity *= 2;
-        arr -> tokens = realloc(arr -> tokens, sizeof(Token) * arr -> capacity);
+        Token* new_arr = realloc(arr -> tokens, sizeof(Token) * arr -> capacity);
+        
+        if (!new_arr) {
+            fprintf(stderr, "ERROR: Failed to realloc token array (capacity: %zu)\n", arr -> capacity);
+            exit(1);
+        }
+
+        arr -> tokens = new_arr;
     }
 
     arr -> tokens[arr -> count] = token;
     arr -> count++;
 }
 
-void print_token_array(TokenArray* arr) {
+void printTokenArray(TokenArray* arr) {
+    if (!arr) return;
+    
     for (int i = 0; i < arr -> count; i++) {
-        print_token(arr -> tokens[i]);
+        _printToken(&arr -> tokens[i]);
     }
 }
 
-Token create_token(TokenType type, char *value, size_t line, size_t col) {
-    Token token;
 
-    token.type = type;
-    strcpy(token.value, value);
-    token.line = line;
-    token.col = col;
+Token createToken(TokenType type, char* literal, size_t line, bool shouldFree) {
+    Token tok;
 
-    return token;
+    tok.type = type;
+    tok.literal = literal;
+    tok.line = line;
+    tok.shouldFree = shouldFree;
+
+    return tok;
 }
 
-void print_token(Token token) {
-    const char* type = token_type_to_str(token.type); 
-
-    printf("Token [Type: %s, Value: %s, Line: %zu, Col: %zu]\n", type, token.value, token.line, token.col);
-}
-
-const char* token_type_to_str(TokenType type) {
-    switch (type) {
-        case TOK_FN:
-            return "TOK_FN";
-            break;
-
-        case TOK_LET: 
-            return "TOK_LET";
-            break;
-
-        case TOK_PRINT:
-            return "TOK_PRINT";
-            break;
-
-        case TOK_STRING:
-            return "TOK_STRING";
-            break;
-        case TOK_IDENTIFIER:
-            return "TOK_IDENTIFIER";
-            break;
-        case TOK_NUMBER:
-            return "TOK_NUMBER";
-            break;
-
-        case TOK_LEFT_PAREN:
-            return "TOK_LEFT_PAREN";
-            break;
-
-        case TOK_RIGHT_PAREN:
-            return "TOK_RIGHT_PAREN";
-            break;
-
-        case TOK_LEFT_BRACE:
-            return "TOK_LEFT_BRACE";
-            break;
-
-        case TOK_RIGHT_BRACE:
-            return "TOK_RIGHT_BRACE";
-            break;
-
-        case TOK_COMMA:
-            return "TOK_COMMA";
-            break;
-
-        case TOK_DOT:
-            return "TOK_DOT";
-            break;
-
-        case TOK_STAR:
-            return "TOK_STAR";
-            break;
-
-        case TOK_SLASH:
-            return "TOK_SLASH";
-            break;
-
-        case TOK_SEMICOLON:
-            return "TOK_SEMICOLON";
-            break;
-
-        default:
-            return NULL;
-            break;
+void freeToken(Token* token) {
+    if (!token -> shouldFree) {
+        return;
     }
+
+    free(token -> literal);
 }
