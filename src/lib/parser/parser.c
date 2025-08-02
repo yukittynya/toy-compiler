@@ -15,8 +15,7 @@ static inline void _error(char* msg, Parser* parser) {
 }
 
 static inline bool _match(Parser* parser, TokenType type) {
-    if (_parserPeek(parser).type == type) return true;
-    return false;
+    return (_parserPeek(parser).type == type) ? true : false;
 }
 
 static inline Token _parserPeek(Parser* parser) {
@@ -37,7 +36,7 @@ static inline Token _parserAdvance(Parser* parser) {
     return tok;
 }
 
-void _pushDeclaration(AstNode* root, AstNode* node) {
+static void _pushDeclaration(AstNode* root, AstNode* node) {
     if (!root) return;
 
     if (root -> data.program.count >= root -> data.program.capacity) {
@@ -57,11 +56,130 @@ void _pushDeclaration(AstNode* root, AstNode* node) {
     root -> data.program.count++;
 }
 
-AstNode* _parseBody(Parser* parser) {
-    return NULL;
+static AstNode* _parseLetStatement(Parser* parser) {
+    AstNode* statement = malloc(sizeof(AstNode));
+    statement -> type = AstAssignment;
+
+    Token name = _parserAdvance(parser); 
+    if (name.type != TokenTypeIdentifier) {
+        _error("Expected identifier", parser);
+    }
+
+    statement -> data.assignment.name = strdup(name.literal);
+    statement -> data.assignment.value = NULL;
+
+    if (_parserPeek(parser).type == TokenTypeSemicolon) {
+        return statement;
+    } else if (_parserPeek(parser).type == TokenTypeEquals) {
+        _parserAdvance(parser);
+
+        Token token = _parserPeek(parser); 
+        
+        if (token.type == TokenTypeString) {
+            _parserAdvance(parser);
+            AstNode* value = malloc(sizeof(AstNode));
+
+            value -> type = AstString;
+            value -> data.string = strdup(token.literal);
+
+            statement -> data.assignment.value = value;
+        } else if (token.type == TokenTypeNumber) {
+            _parserAdvance(parser);
+            AstNode* value = malloc(sizeof(AstNode));
+
+            value -> type = AstNumber;
+            value -> data.number = atof(token.literal);
+
+            statement -> data.assignment.value = value;
+        }
+    } else {
+        _error("Execepted assignment or ';'", parser);
+    }
+
+    if (!_match(parser, TokenTypeSemicolon)) {
+        _error("Execepted ';'", parser);
+    }
+
+    return statement;
 }
 
-AstNode* _parseFunction(Parser* parser) {
+static AstNode* _parseStatement(Parser* parser) {
+    TokenType type = _parserPeek(parser).type;
+
+    switch (type) {
+        case TokenTypeLet:
+            _parserAdvance(parser);
+            return _parseLetStatement(parser);
+
+        default:
+            _error("unexpected token", parser);
+            return NULL;
+    }
+}
+
+static AstNode* _parseBlock(Parser* parser) {
+    AstNode* block = malloc(sizeof(AstNode));
+
+    while (_parserPeek(parser).type != TokenTypeRightBrace) {
+        AstNode* statement = _parseStatement(parser);
+    }
+
+    if (!_match(parser, TokenTypeRightBrace)) {
+        _error("Expeced '}'", parser);
+    }
+
+    return block;
+}
+
+static char** _parseParams(Parser* parser) {
+    size_t count = 0;
+    size_t capacity = 32;
+    char** params = malloc(sizeof(char*) * capacity);
+
+    if (!params) {
+        printf("malloc of params failed\n");
+        exit(1);
+    }
+
+    if (_parserPeek(parser).type == TokenTypeRightParen) {
+        return params;
+    }
+
+    while (true) {
+        if (_parserPeek(parser).type != TokenTypeIdentifier) {
+            _error("Expected parameter", parser);
+            break;
+        }
+
+        Token token = _parserAdvance(parser);
+
+        if (count >= capacity) {
+            capacity *= 2;
+            params = realloc(params, capacity);
+
+            if (!params) {
+                printf("realloc of params failed\n");
+                exit(1);
+            }
+        }
+
+        params[count] = malloc(strlen(token.literal) + 1);
+        strcpy(params[count++], token.literal); 
+
+        if (_parserPeek(parser).type == TokenTypeRightParen) {
+            break; 
+        } else if (_parserPeek(parser).type == TokenTypeComma) {
+            _parserAdvance(parser); 
+        } else {
+            _error("Expected ',' or ')' after parameter", parser);
+            break;
+        }
+    }
+
+    return params;
+}
+
+static AstNode* _parseFunction(Parser* parser) {
     AstNode* function = (AstNode*) malloc(sizeof(AstNode));
     function -> type = AstFn;
 
@@ -82,6 +200,8 @@ AstNode* _parseFunction(Parser* parser) {
     }
     _parserAdvance(parser);
 
+    char** params = _parseParams(parser);
+
     if (!_match(parser, TokenTypeRightParen)) {
         _error("Expected ')'", parser);
     }
@@ -92,12 +212,14 @@ AstNode* _parseFunction(Parser* parser) {
     }
     _parserAdvance(parser);
 
-    AstNode* body = _parseBody(parser);
+    AstNode* block = _parseBlock(parser);
     AstNode* func = malloc(sizeof(AstNode));
 
     func -> type = AstFn;
     func -> data.function.name = strdup(name.literal);
-    func -> data.function.body = body;
+    func -> data.function.body = block;
+    func -> data.function.params = params;
+    func -> data.function.paramCount = sizeof(params) / sizeof(params[0]);
 
     return function;
 } 
@@ -108,6 +230,7 @@ AstNode* _parseProgram(Parser* parser) {
 
     while (_parserPeek(parser).type != TokenTypeEof) {
         AstNode* function = _parseFunction(parser);
+        printAst(parser -> root, 0);
     }
 
     return program;
@@ -115,6 +238,97 @@ AstNode* _parseProgram(Parser* parser) {
 
 void parse(Parser* parser) {
     parser -> root = _parseProgram(parser);
+    printAst(parser -> root, 0);
+}
+
+void printAst(AstNode* node, int indent) {
+    if (node == NULL) {
+        printf("%*sNULL\n", indent, "");
+        return;
+    }
+    
+    printf("%*s", indent, "");
+    
+    switch (node->type) {
+        case AstNumber:
+            printf("NUMBER: %.2f\n", node -> data.number);
+            break;
+            
+        case AstString:
+            printf("STRING: \"%s\"\n", node -> data.string);
+            break;
+            
+        case AstIdentifier:
+            printf("IDENTIFIER: %s\n", node -> data.identifier);
+            break;
+            
+        case AstBinaryOp:
+            printf("BINARY_OP: '%c'\n", node -> data.binary.op);
+            printf("%*sLeft:\n", indent + 2, "");
+            printAst(node -> data.binary.left, indent + 4);
+            printf("%*sRight:\n", indent + 2, "");
+            printAst(node -> data.binary.right, indent + 4);
+            break;
+            
+        case AstAssignment:
+            printf("ASSIGNMENT: %s\n", node -> data.assignment.name);
+            printf("%*sValue:\n", indent + 2, "");
+            printAst(node -> data.assignment.value, indent + 4);
+            break;
+            
+        case AstCall:
+            printf("CALL: %s() [%zu args]\n", node -> data.call.name, node -> data.call.argCount);
+
+            for (int i = 0; i < node -> data.call.argCount; i++) {
+                printf("%*sArg %d:\n", indent + 2, "", i);
+                printAst(node->data.call.args[i], indent + 4);
+            }
+            break;
+            
+        case AstReturn:
+            printf("RETURN\n");
+
+            if (node -> data.returnStatement.expression) {
+                printf("%*sExpression:\n", indent + 2, "");
+                printAst(node -> data.returnStatement.expression, indent + 4);
+            }
+            break;
+            
+        case AstBlock:
+            printf("BLOCK [%zu statements]\n", node -> data.block.statementCount);
+
+            for (int i = 0; i < node -> data.block.statementCount; i++) {
+                printf("%*sStatement %d:\n", indent + 2, "", i);
+                printAst(node->data.block.statements[i], indent + 4);
+            }
+            break;
+            
+        case AstFn:
+            printf("FUNCTION: %s() [%zu params]\n", node -> data.function.name, node -> data.function.paramCount);
+            
+            if (node -> data.function.paramCount > 0) {
+                printf("%*sParameters:\n", indent + 2, "");
+                for (int i = 0; i < node -> data.function.paramCount; i++) {
+                    printf("%*s%d: %s\n", indent + 4, "", i, node -> data.function.params[i]);
+                }
+            }
+            
+            printf("%*sBody:\n", indent + 2, "");
+            printAst(node -> data.function.body, indent + 4);
+            break;
+            
+        case AstProgram:
+            printf("PROGRAM [%zu declarations]\n", node-> data.program.count);
+            for (int i = 0; i < node -> data.program.count; i++) {
+                printf("%*sDeclaration %d:\n", indent + 2, "", i);
+                printAst(node -> data.program.declarations[i], indent + 4);
+            }
+            break;
+            
+        default:
+            printf("UNKNOWN NODE TYPE: %d\n", node->type);
+            break;
+    }
 }
 
 Parser* createParser(TokenArray *arr, size_t len) {

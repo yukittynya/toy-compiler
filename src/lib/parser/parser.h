@@ -48,7 +48,7 @@ typedef struct AstNode {
         } returnStatement;
 
         struct {
-            struct AstNode** statement;
+            struct AstNode** statements;
             size_t statementCount;
         } block;
 
@@ -77,5 +77,6 @@ typedef struct {
 Parser* createParser(TokenArray* arr, size_t len);
 void freeParser(Parser** parser);
 void parse(Parser* parser);
+void printAst(AstNode* root, int indent);
 
 #endif // !define PARSER_H
