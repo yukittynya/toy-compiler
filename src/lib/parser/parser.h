@@ -49,7 +49,8 @@ typedef struct AstNode {
 
         struct {
             struct AstNode** statements;
-            size_t statementCount;
+            size_t count;
+            size_t capacity;
         } block;
 
         struct {

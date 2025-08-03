@@ -42,7 +42,7 @@ static void _pushDeclaration(AstNode* root, AstNode* node) {
     if (root -> data.program.count >= root -> data.program.capacity) {
         root -> data.program.capacity *= 2;
 
-        AstNode** newArr = realloc(root -> data.program.declarations, sizeof(AstNode) * root -> data.program.capacity);
+        AstNode** newArr = realloc(root -> data.program.declarations, sizeof(AstNode*) * root -> data.program.capacity);
 
         if (!newArr) {
             printf("realloc of decl failed\n");
@@ -107,7 +107,59 @@ static AstNode* _parseLetStatement(Parser* parser) {
 }
 
 static AstNode* _parsePrint(Parser* parser) {
+    AstNode* call = malloc(sizeof(AstNode));
+    
+    call -> type = AstCall;
+    call -> data.call.name = strdup("print");
 
+    if (!_match(parser, TokenTypeLeftParen)) {
+        _error("expected '('", parser);
+    }
+    _parserAdvance(parser);
+
+    call -> data.call.argCount = 1;
+    call -> data.call.args = malloc(sizeof(AstNode*) * call -> data.call.argCount);
+
+    Token arg = _parserPeek(parser);
+    if (arg.type == TokenTypeString) {
+        _parserAdvance(parser);
+
+        AstNode* argNode = malloc(sizeof(AstNode));
+        argNode -> type = AstString;
+        argNode -> data.string = strdup(arg.literal);
+
+        call -> data.call.args[0] = argNode;
+    } else if (arg.type == TokenTypeIdentifier) {
+        _parserAdvance(parser);
+
+        AstNode* argNode = malloc(sizeof(AstNode));
+        argNode -> type = AstIdentifier;
+        argNode -> data.identifier = strdup(arg.literal);
+
+        call -> data.call.args[0] = argNode;
+    } else if (arg.type == TokenTypeNumber) {
+        _parserAdvance(parser);
+
+        AstNode* argNode = malloc(sizeof(AstNode));
+        argNode -> type = AstNumber;
+        argNode -> data.number = atof(arg.literal);
+
+        call -> data.call.args[0] = argNode;
+    } else {
+        _error("expected string, number or identifier in print statement", parser);
+    }
+
+    if (!_match(parser, TokenTypeRightParen)) {
+        _error("Expected ')' after print argument", parser);
+    }
+    _parserAdvance(parser);
+    
+    if (!_match(parser, TokenTypeSemicolon)) {
+        _error("Expected ';' after print", parser);
+    }
+    _parserAdvance(parser);
+
+    return call;
 }
 
 static AstNode* _parseStatement(Parser* parser) {
@@ -131,8 +183,25 @@ static AstNode* _parseStatement(Parser* parser) {
 static AstNode* _parseBlock(Parser* parser) {
     AstNode* block = malloc(sizeof(AstNode));
 
+    block -> type = AstBlock;
+    block -> data.block.count = 0;
+    block -> data.block.capacity = 16;
+    block -> data.block.statements = malloc(sizeof(AstNode*) * block -> data.block.capacity);
+
     while (_parserPeek(parser).type != TokenTypeRightBrace) {
         AstNode* statement = _parseStatement(parser);
+
+        if (block -> data.block.count >= block -> data.block.capacity) {
+            block -> data.block.capacity *= 2;
+            block -> data.block.statements = realloc(block -> data.block.statements, sizeof(AstNode*) * block -> data.block.capacity);
+
+            if (!block -> data.block.statements) {
+                printf("Realloc failed of block -> data.block.statements\n");
+                exit(1);
+            }
+        }
+
+        block -> data.block.statements[block -> data.block.count++] = statement;
     }
 
     if (!_match(parser, TokenTypeRightBrace)) {
@@ -144,7 +213,7 @@ static AstNode* _parseBlock(Parser* parser) {
     return block;
 }
 
-static char** _parseParams(Parser* parser) {
+static char** _parseParams(Parser* parser, size_t* paramCount) {
     size_t count = 0;
     size_t capacity = 32;
     char** params = malloc(sizeof(char*) * capacity);
@@ -155,6 +224,7 @@ static char** _parseParams(Parser* parser) {
     }
 
     if (_parserPeek(parser).type == TokenTypeRightParen) {
+        *paramCount = 0;
         return params;
     }
 
@@ -189,12 +259,14 @@ static char** _parseParams(Parser* parser) {
         }
     }
 
+    *paramCount = count;
+
     return params;
 }
 
 static AstNode* _parseFunction(Parser* parser) {
-    AstNode* function = (AstNode*) malloc(sizeof(AstNode));
-    function -> type = AstFn;
+    AstNode* func = (AstNode*) malloc(sizeof(AstNode));
+    func -> type = AstFn;
 
     if (!_match(parser, TokenTypeFn)) {
         _error("Expected 'fn'", parser);
@@ -213,7 +285,8 @@ static AstNode* _parseFunction(Parser* parser) {
     }
     _parserAdvance(parser);
 
-    char** params = _parseParams(parser);
+    size_t paramCount = 0;
+    char** params = _parseParams(parser, &paramCount);
 
     if (!_match(parser, TokenTypeRightParen)) {
         _error("Expected ')'", parser);
@@ -226,24 +299,27 @@ static AstNode* _parseFunction(Parser* parser) {
     _parserAdvance(parser);
 
     AstNode* block = _parseBlock(parser);
-    AstNode* func = malloc(sizeof(AstNode));
 
     func -> type = AstFn;
     func -> data.function.name = strdup(name.literal);
     func -> data.function.body = block;
     func -> data.function.params = params;
-    func -> data.function.paramCount = sizeof(params) / sizeof(params[0]);
+    func -> data.function.paramCount = paramCount;
 
-    return function;
+    return func;
 } 
 
 AstNode* _parseProgram(Parser* parser) {
     AstNode* program = (AstNode*) malloc(sizeof(AstNode));
+
     program -> type = AstProgram;
+    program -> data.program.count = 0;
+    program -> data.program.capacity = 16;
+    program -> data.program.declarations = malloc(sizeof(AstNode*) * program -> data.program.capacity);
 
     while (_parserPeek(parser).type != TokenTypeEof) {
         AstNode* function = _parseFunction(parser);
-        printAst(parser -> root, 0);
+        _pushDeclaration(program, function);
     }
 
     return program;
@@ -308,9 +384,9 @@ void printAst(AstNode* node, int indent) {
             break;
             
         case AstBlock:
-            printf("BLOCK [%zu statements]\n", node -> data.block.statementCount);
+            printf("BLOCK [%zu statements]\n", node -> data.block.count);
 
-            for (int i = 0; i < node -> data.block.statementCount; i++) {
+            for (int i = 0; i < node -> data.block.count; i++) {
                 printf("%*sStatement %d:\n", indent + 2, "", i);
                 printAst(node->data.block.statements[i], indent + 4);
             }
@@ -361,21 +437,6 @@ Parser* createParser(TokenArray *arr, size_t len) {
         free(parser);
         return NULL;
     }
-
-
-    root -> type = AstProgram;
-    root -> data.program.declarations = (AstNode**) malloc(sizeof(AstNode*) * 32);
-
-    if (!root -> data.program.declarations) {
-        free(root);
-        free(parser);
-        return NULL;
-    }
-
-    root -> data.program.count = 0;
-    root -> data.program.capacity = 32;
-
-    parser -> root = root;
 
     return parser; 
 }
