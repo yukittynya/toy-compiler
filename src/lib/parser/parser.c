@@ -69,6 +69,7 @@ static AstNode* _parseLetStatement(Parser* parser) {
     statement -> data.assignment.value = NULL;
 
     if (_parserPeek(parser).type == TokenTypeSemicolon) {
+        _parserAdvance(parser);
         return statement;
     } else if (_parserPeek(parser).type == TokenTypeEquals) {
         _parserAdvance(parser);
@@ -100,7 +101,13 @@ static AstNode* _parseLetStatement(Parser* parser) {
         _error("Execepted ';'", parser);
     }
 
+    _parserAdvance(parser);
+
     return statement;
+}
+
+static AstNode* _parsePrint(Parser* parser) {
+
 }
 
 static AstNode* _parseStatement(Parser* parser) {
@@ -110,6 +117,10 @@ static AstNode* _parseStatement(Parser* parser) {
         case TokenTypeLet:
             _parserAdvance(parser);
             return _parseLetStatement(parser);
+
+        case TokenTypePrint:
+            _parserAdvance(parser);
+            return _parsePrint(parser);
 
         default:
             _error("unexpected token", parser);
@@ -127,6 +138,8 @@ static AstNode* _parseBlock(Parser* parser) {
     if (!_match(parser, TokenTypeRightBrace)) {
         _error("Expeced '}'", parser);
     }
+
+    _parserAdvance(parser);
 
     return block;
 }
