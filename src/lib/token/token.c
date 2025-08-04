@@ -130,9 +130,11 @@ void pushTokenArray(TokenArray* arr, Token token) {
 void printTokenArray(TokenArray* arr) {
     if (!arr) return;
     
+    printf("=== START TOKENS ===\n");
     for (int i = 0; i < arr -> count; i++) {
         _printToken(&arr -> tokens[i]);
     }
+    printf("=== END TOKENS ===\n");
 }
 
 

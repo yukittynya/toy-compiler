@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
 
     IR* ir = createIR();
     generateIR(ir, parser -> root);
+    printIR(ir);
 
     freeIR(&ir);
     freeParser(&parser);

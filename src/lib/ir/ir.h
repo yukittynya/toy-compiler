@@ -9,7 +9,8 @@ typedef enum {
     IrCall,
 
     IrLet,
-    IrLiteral,
+    IrStringLiteral,
+    IrNumberLiteral,
     IrVariable
 } IrType;
 
@@ -38,7 +39,11 @@ typedef struct IrNode {
 
         struct {
             double value;
-        } literal;
+        } numberLiteral;
+
+        struct {
+            char* value;
+        } stringLiteral;
 
         struct {
             char* name;
@@ -55,5 +60,6 @@ typedef struct {
 void generateIR(IR* ir, AstNode* root);
 IR* createIR();
 void freeIR(IR** ir);
+void printIR(IR* ir);
 
 #endif // !IR_H

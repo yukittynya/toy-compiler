@@ -327,7 +327,9 @@ AstNode* _parseProgram(Parser* parser) {
 
 void parse(Parser* parser) {
     parser -> root = _parseProgram(parser);
+    printf("=== START AST ===\n");
     printAst(parser -> root, 0);
+    printf("=== END AST ===\n");
 }
 
 void printAst(AstNode* node, int indent) {
