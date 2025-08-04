@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "lib/ir/ir.h"
 #include "lib/lexer/lexer.h"
 #include "lib/parser/parser.h"
 
@@ -44,6 +45,10 @@ int main(int argc, char *argv[]) {
     Parser* parser = createParser(lexer -> tokens, lexer -> tokens -> count);
     parse(parser);
 
+    IR* ir = createIR();
+    generateIR(ir, parser -> root);
+
+    freeIR(&ir);
     freeParser(&parser);
     freeLexer(&lexer);
     

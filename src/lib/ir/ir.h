@@ -5,23 +5,49 @@
 #include <stdlib.h>
 
 typedef enum {
-    IrLoadConst,
-    IrStoreVar,
-    IrLoadVar,
-    IrCall
-} IROpCode;
+    IrFunction,
+    IrCall,
 
-typedef struct {
-    IROpCode op;
+    IrLet,
+    IrLiteral,
+    IrVariable
+} IrType;
+
+typedef struct IrNode {
+    IrType type;
     union {
-        double number;
-        char* string;
-        char* varName;
-    } operand;
-} IRInstruction;
+        struct {
+            char* name;
+            char** params;
+            size_t paramCount;
+            struct IrNode** body;
+            size_t len;
+        } function;
+
+        struct {
+            char* name;
+            struct IrNode** args;
+            size_t argCount;
+        } call;
+
+        struct {
+            char* name;
+            struct IrNode* value;
+        } let;
+
+
+        struct {
+            double value;
+        } literal;
+
+        struct {
+            char* name;
+        } variable;
+    } data;
+} IrNode;
 
 typedef struct {
-    IRInstruction* instructions;
+    IrNode* instructions;
     size_t count;
     size_t capacity;
 } IR;
